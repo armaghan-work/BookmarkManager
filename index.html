@@ -1,0 +1,1598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bookmark Manager</title>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            font-size: 13px;
+            line-height: 1.4;
+            background: #fafafa;
+            color: #333;
+        }
+        
+        .header {
+            background: white;
+            border-bottom: 1px solid #e0e0e0;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .search-box {
+            flex: 1;
+            padding: 6px 28px 6px 10px;
+            border: 1px solid #d0d0d0;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #1a73e8;
+            box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background: #f9fafb;
+            border-color: #9ca3af;
+        }
+
+        .btn-primary {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+
+        .btn-primary:hover {
+            background: #2563eb;
+        }
+        
+        .main {
+            display: flex;
+            height: calc(100vh - 40px);
+            position: relative;
+        }
+        
+        .sidebar {
+            width: 250px;
+            background: white;
+            border-right: 1px solid #e0e0e0;
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+        
+        .resizer {
+            width: 5px;
+            cursor: col-resize;
+            background: #e0e0e0;
+            height: 100%;
+            position: absolute;
+            left: 250px;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .resizer:hover {
+            background: #3b82f6;
+        }
+        
+        .content {
+            flex: 1;
+            background: white;
+            overflow-y: auto;
+            padding: 8px;
+        }
+        
+        .folder {
+            margin: 2px 0;
+            background: white;
+        }
+        
+        .folder-header {
+            padding: 6px 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-radius: 4px;
+        }
+        
+        .folder-header:hover {
+            background: #f0f0f0;
+        }
+        
+        .folder.selected > .folder-header {
+            background: #e8f0fe;
+            border-left: 2px solid #1a73e8;
+        }
+        
+        .folder-title {
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #202124;
+        }
+        
+        .folder-actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .folder:hover .folder-actions {
+            opacity: 1;
+        }
+        
+        .folder-content {
+            margin-left: 15px; /* Indentation for subfolders */
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        
+        .folder.expanded > .folder-content {
+            max-height: 2000px;
+        }
+        
+        .link-item {
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .link-item:last-child {
+            border-bottom: none;
+        }
+        
+        .link-item:hover {
+            background: #f8f8f8;
+        }
+        
+        .link-url {
+            flex: 1;
+            color: #0066cc;
+            text-decoration: none;
+            font-size: 12px;
+        }
+        
+        .link-url:hover {
+            text-decoration: underline;
+        }
+        
+        .link-title {
+            font-weight: 500;
+            margin-right: 8px;
+            font-size: 12px;
+        }
+        
+        .link-actions {
+            display: flex;
+            gap: 2px;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .link-item:hover .link-actions {
+            opacity: 1;
+        }
+        
+        .action-btn {
+            padding: 2px 4px;
+            border: none;
+            background: #e8e8e8;
+            border-radius: 2px;
+            cursor: pointer;
+            font-size: 10px;
+        }
+        
+        .action-btn:hover {
+            background: #d0d0d0;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            min-width: 300px;
+            border: 1px solid #d0d0d0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        .modal-header {
+            font-weight: 500;
+            margin-bottom: 12px;
+            font-size: 16px;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #4b5563;
+        }
+        
+        .form-input, .form-select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        
+        .form-input:focus, .form-select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 8px;
+            justify-content: flex-end;
+            margin-top: 16px;
+        }
+        
+        .drag-over {
+            background: #e8f4f8 !important;
+            border: 2px dashed #4a90a4 !important;
+            border-radius: 4px;
+        }
+        
+        .dragging {
+            opacity: 0.5;
+        }
+
+
+        .drag-handle {
+        cursor: grab;
+        color: #9ca3af;
+        margin-right: 4px;
+        font-size: 12px;
+        user-select: none;
+         }
+    
+        .drag-handle:active {
+            cursor: grabbing;
+        }
+        
+        .drag-ghost {
+            opacity: 0.4;
+        }
+        
+        
+        .collapsed-icon::before,
+        .expanded-icon::before {
+            content: '';
+            display: none;
+        }
+        
+        .empty-state {
+            padding: 20px;
+            text-align: center;
+            color: #6b7280;
+            font-size: 14px;
+            background: #f9fafb;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .folder-header-big {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .folder-header-big h2 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #111827;
+        }
+        
+        .favicon {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+            flex-shrink: 0;
+        }
+        
+        .folder-count {
+            font-size: 11px;
+            color: #5f6368;
+            margin-left: 4px;
+            font-weight: normal;
+        }
+        
+        .folder-icon {
+            color: #5f6368;
+            font-size: 16px;
+            margin-right: 4px;
+            font-style: normal;
+        }
+        
+        .folder-icon.open {
+            color: #1a73e8;
+        }
+        
+        .search-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            align-items: center;
+        }
+        
+        .search-clear {
+            position: absolute;
+            right: 8px;
+            background: none;
+            border: none;
+            color: #5f6368;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 0;
+            display: none;
+        }
+        
+        .search-clear.visible {
+            display: block;
+        }
+        
+        .search-clear:hover {
+            color: #202124;
+        }
+
+        .btn-save {
+            background: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        
+        .btn-save:hover {
+            background: #2563eb;
+        }
+
+        /* Notes window styles */
+        .notes-window {
+            position: fixed;
+            top: 100px;
+            right: 50px;
+            width: 300px;
+            height: 400px;
+            background: #fefce8;
+            border: 1px solid #d1c44e;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 500;
+            display: none;
+            resize: both;
+            overflow: hidden;
+            min-width: 200px;
+            min-height: 150px;
+        }
+        
+        .notes-header {
+            background: #f3f096;
+            border-bottom: 1px solid #d1c44e;
+            padding: 8px 12px;
+            cursor: move;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            font-weight: 500;
+            font-size: 14px;
+            color: #8b5a00;
+        }
+        
+        .notes-title {
+            flex: 1;
+            user-select: none;
+        }
+        
+        .notes-close {
+            background: none;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            color: #8b5a00;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 3px;
+        }
+        
+        .notes-close:hover {
+            background: rgba(139, 90, 0, 0.1);
+        }
+        
+        .notes-content {
+            height: calc(100% - 35px);
+            padding: 12px;
+            overflow: hidden;
+        }
+        
+        .notes-textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: transparent;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            font-size: 13px;
+            line-height: 1.4;
+            color: #8b5a00;
+            overflow-y: auto;
+        }
+        
+        .notes-textarea::placeholder {
+            color: #a16207;
+            opacity: 0.7;
+        }
+        
+        /* Custom scrollbar for notes */
+        .notes-textarea::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .notes-textarea::-webkit-scrollbar-track {
+            background: rgba(209, 196, 78, 0.1);
+            border-radius: 4px;
+        }
+        
+        .notes-textarea::-webkit-scrollbar-thumb {
+            background: rgba(209, 196, 78, 0.3);
+            border-radius: 4px;
+        }
+        
+        .notes-textarea::-webkit-scrollbar-thumb:hover {
+            background: rgba(209, 196, 78, 0.5);
+        }
+        
+        /* Button styling for My Notes */
+        .btn-notes {
+            background: #fef3c7;
+            color: #8b5a00;
+            border-color: #d1c44e;
+        }
+        
+        .btn-notes:hover {
+            background: #fde68a;
+            border-color: #a16207;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="search-container">
+            <input type="text" class="search-box" placeholder="Search bookmarks..." id="searchInput">
+            <button class="search-clear" id="searchClear" title="Clear search">✕</button>
+        </div>
+        <button class="btn" onclick="showAddFolderModal()">+ Folder</button>
+        <button class="btn" onclick="showAddLinkModal()">+ Link</button>
+        <button class="btn" onclick="exportData()">Export</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+        <button class="btn" onclick="document.getElementById('importFile').click()">Import</button>
+        <button class="btn btn-notes" onclick="toggleNotesWindow()">📝 My Notes</button>
+    </div>
+    <div class="main">
+        <div class="sidebar">
+            <div id="folderList"></div>
+        </div>
+        <div class="resizer" id="sidebarResizer"></div>
+        <div class="content">
+            <div id="linkList"></div>
+        </div>
+    </div>
+    
+    <!-- Modals -->
+    <div id="folderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Add/Edit Folder</div>
+            <div class="form-group">
+                <label class="form-label">Folder Name</label>
+                <input type="text" class="form-input" id="folderName">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Parent Folder (optional)</label>
+                <select class="form-select" id="parentFolder">
+                    <option value="">None (Root level)</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn" onclick="closeModal('folderModal')">Cancel</button>
+                <button class="btn btn-save" onclick="saveFolder()">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="linkModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">Add/Edit Link</div>
+            <div class="form-group">
+                <label class="form-label">Title</label>
+                <input type="text" class="form-input" id="linkTitle">
+            </div>
+            <div class="form-group">
+                <label class="form-label">URL</label>
+                <input type="text" class="form-input" id="linkUrl">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Folder</label>
+                <select class="form-select" id="linkFolder">
+                    <option value="">Select folder...</option>
+                </select>
+            </div>
+            <div class="form-actions">
+                <button class="btn" onclick="closeModal('linkModal')">Cancel</button>
+                <button class="btn btn-save" onclick="saveLink()">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notes Window -->
+    <div id="notesWindow" class="notes-window">
+        <div class="notes-header" id="notesHeader">
+            <div class="notes-title">📝 My Notes</div>
+            <button class="notes-close" onclick="closeNotesWindow()" title="Close">×</button>
+        </div>
+        <div class="notes-content">
+            <textarea 
+                id="notesTextarea" 
+                class="notes-textarea" 
+                placeholder="Type your notes here...&#10;&#10;✓ Press Enter for new lines&#10;✓ Window is resizable and movable&#10;✓ Your notes are automatically saved"
+            ></textarea>
+        </div>
+    </div>
+
+    <script>
+    let bookmarkData = { folders: [], links: [], notes: { content: '', position: { x: 50, y: 100 }, size: { width: 300, height: 400 } } };
+    let currentEditId = null;
+    let currentFolder = null;
+    let searchTerm = '';
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        loadData(); // This will call setupNotesWindow() after data is loaded
+        setupSearch();
+        setupDragAndDrop();
+        setupSidebarResizer();
+    });
+
+    // Notes functionality
+    function setupNotesWindow() {
+        const notesWindow = document.getElementById('notesWindow');
+        const notesHeader = document.getElementById('notesHeader');
+        const notesTextarea = document.getElementById('notesTextarea');
+        
+        // Safety check - ensure notes object exists
+        if (!bookmarkData.notes) {
+            bookmarkData.notes = {
+                content: '',
+                position: { x: 50, y: 100 },
+                size: { width: 300, height: 400 }
+            };
+        }
+        
+        // Make notes window draggable
+        let isDragging = false;
+        let dragOffset = { x: 0, y: 0 };
+        
+        notesHeader.addEventListener('mousedown', function(e) {
+            isDragging = true;
+            const rect = notesWindow.getBoundingClientRect();
+            dragOffset.x = e.clientX - rect.left;
+            dragOffset.y = e.clientY - rect.top;
+            
+            document.addEventListener('mousemove', dragNotesWindow);
+            document.addEventListener('mouseup', stopDragNotesWindow);
+            e.preventDefault();
+        });
+        
+        function dragNotesWindow(e) {
+            if (!isDragging) return;
+            
+            const x = e.clientX - dragOffset.x;
+            const y = e.clientY - dragOffset.y;
+            
+            // Keep window within viewport bounds
+            const maxX = window.innerWidth - notesWindow.offsetWidth;
+            const maxY = window.innerHeight - notesWindow.offsetHeight;
+            
+            const boundedX = Math.max(0, Math.min(x, maxX));
+            const boundedY = Math.max(0, Math.min(y, maxY));
+            
+            notesWindow.style.left = boundedX + 'px';
+            notesWindow.style.top = boundedY + 'px';
+            notesWindow.style.right = 'auto';
+            notesWindow.style.bottom = 'auto';
+            
+            // Save position safely
+            if (bookmarkData && bookmarkData.notes) {
+                bookmarkData.notes.position.x = boundedX;
+                bookmarkData.notes.position.y = boundedY;
+            }
+        }
+        
+        function stopDragNotesWindow() {
+            isDragging = false;
+            document.removeEventListener('mousemove', dragNotesWindow);
+            document.removeEventListener('mouseup', stopDragNotesWindow);
+            saveData();
+        }
+        
+// Auto-save notes content
+let saveTimeout;
+notesTextarea.addEventListener('input', function() {
+    clearTimeout(saveTimeout);
+    saveTimeout = setTimeout(async () => {
+        if (bookmarkData && bookmarkData.notes) {
+            bookmarkData.notes.content = notesTextarea.value;
+            try {
+                await saveData();
+            } catch (error) {
+                console.error('Failed to save notes:', error);
+            }
+        }
+    }, 1000); // Increased from 500ms to 1000ms to reduce save frequency
+});
+        
+        // Save size when window is resized
+        const resizeObserver = new ResizeObserver(function(entries) {
+            clearTimeout(resizeObserver.saveTimeout);
+            resizeObserver.saveTimeout = setTimeout(() => {
+                for (let entry of entries) {
+                    const { width, height } = entry.contentRect;
+                    if (bookmarkData && bookmarkData.notes && bookmarkData.notes.size) {
+                        bookmarkData.notes.size.width = width;
+                        bookmarkData.notes.size.height = height;
+                        saveData().catch(console.error);
+                    }
+                }
+            }, 500);
+        });
+        
+        resizeObserver.observe(notesWindow);
+        
+        // Load saved notes content and position
+        notesTextarea.value = (bookmarkData.notes && bookmarkData.notes.content) || '';
+        if (bookmarkData.notes && bookmarkData.notes.position && bookmarkData.notes.position.x !== undefined) {
+            notesWindow.style.left = bookmarkData.notes.position.x + 'px';
+            notesWindow.style.top = bookmarkData.notes.position.y + 'px';
+            notesWindow.style.right = 'auto';
+        }
+        if (bookmarkData.notes && bookmarkData.notes.size && bookmarkData.notes.size.width && bookmarkData.notes.size.height) {
+            notesWindow.style.width = bookmarkData.notes.size.width + 'px';
+            notesWindow.style.height = bookmarkData.notes.size.height + 'px';
+        }
+    }
+    
+    function toggleNotesWindow() {
+        const notesWindow = document.getElementById('notesWindow');
+        
+        if (notesWindow.style.display === 'block') {
+            notesWindow.style.display = 'none';
+        } else {
+            notesWindow.style.display = 'block';
+            // Focus on textarea when opening
+            setTimeout(() => {
+                document.getElementById('notesTextarea').focus();
+            }, 100);
+        }
+    }
+    
+    function closeNotesWindow() {
+        document.getElementById('notesWindow').style.display = 'none';
+    }
+
+    function setupSidebarResizer() {
+        const resizer = document.getElementById('sidebarResizer');
+        const sidebar = document.querySelector('.sidebar');
+        
+        let startX, startWidth;
+        
+        function startResize(e) {
+            startX = e.clientX;
+            startWidth = parseInt(window.getComputedStyle(sidebar).width, 10);
+            document.addEventListener('mousemove', resize);
+            document.addEventListener('mouseup', stopResize);
+            document.body.style.cursor = 'col-resize';
+        }
+        
+        function resize(e) {
+            const width = startWidth + (e.clientX - startX);
+            if (width > 100 && width < window.innerWidth * 0.5) {
+                sidebar.style.width = width + 'px';
+                resizer.style.left = width + 'px';
+            }
+        }
+        
+        function stopResize() {
+            document.removeEventListener('mousemove', resize);
+            document.removeEventListener('mouseup', stopResize);
+            document.body.style.cursor = '';
+        }
+        
+        resizer.addEventListener('mousedown', startResize);
+    }
+
+    function setupSearch() {
+        const searchInput = document.getElementById('searchInput');
+        const searchClear = document.getElementById('searchClear');
+        
+        searchInput.addEventListener('input', function(e) {
+            searchTerm = e.target.value.toLowerCase();
+            
+            // Toggle clear button visibility
+            if (searchTerm) {
+                searchClear.classList.add('visible');
+            } else {
+                searchClear.classList.remove('visible');
+            }
+            
+            renderLinks();
+        });
+        
+        searchClear.addEventListener('click', function() {
+            searchInput.value = '';
+            searchTerm = '';
+            searchClear.classList.remove('visible');
+            renderLinks();
+        });
+    }
+
+    function setupDragAndDrop() {
+        // Setup sortable for root folders
+        const folderList = document.getElementById('folderList');
+        new Sortable(folderList, {
+            animation: 150,
+            handle: '.drag-handle',
+            ghostClass: 'drag-ghost',
+            group: 'folders',
+            onEnd: async function(evt) {
+                updateFolderOrder();
+                await saveData();
+            }
+        });
+        
+        // For handling link drag and drop
+        document.addEventListener('dragstart', function(e) {
+            // Handle folder dragging
+            if (e.target.classList.contains('folder')) {
+                e.dataTransfer.setData('application/folder', e.target.dataset.folderId);
+                e.target.classList.add('dragging');
+            }
+            
+            // Handle link dragging
+            if (e.target.classList.contains('link-item')) {
+                e.dataTransfer.setData('application/link', e.target.dataset.linkId);
+                e.target.classList.add('dragging');
+            }
+        });
+        
+        document.addEventListener('dragend', function(e) {
+            if (e.target.classList.contains('folder') || e.target.classList.contains('link-item')) {
+                e.target.classList.remove('dragging');
+            }
+        });
+        
+        document.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            // Find the folder we're hovering over
+            const dropTarget = e.target.closest('.folder');
+            
+            if (dropTarget) {
+                // Handle folder to folder drag
+                const draggedFolderId = e.dataTransfer.getData('application/folder');
+                const draggedLinkId = e.dataTransfer.getData('application/link');
+                
+                if ((draggedFolderId && draggedFolderId !== dropTarget.dataset.folderId) || 
+                    draggedLinkId) {
+                    dropTarget.classList.add('drag-over');
+                }
+            }
+        });
+        
+        document.addEventListener('dragleave', function(e) {
+            const dropTarget = e.target.closest('.folder');
+            if (dropTarget && !dropTarget.contains(e.relatedTarget)) {
+                dropTarget.classList.remove('drag-over');
+            }
+        });
+        
+        document.addEventListener('drop', async function(e) {
+            e.preventDefault();
+            
+            // Handle drops on folders
+            const dropTarget = e.target.closest('.folder');
+            
+            if (dropTarget) {
+                const targetFolderId = dropTarget.dataset.folderId;
+                
+                // Handle folder to folder drop
+                const folderId = e.dataTransfer.getData('application/folder');
+                if (folderId && folderId !== targetFolderId) {
+                    await moveFolder(folderId, targetFolderId);
+                }
+                
+                // Handle link to folder drop
+                const linkId = e.dataTransfer.getData('application/link');
+                if (linkId) {
+                    await moveLink(linkId, targetFolderId);
+                }
+            }
+            
+            document.querySelectorAll('.drag-over').forEach(el => {
+                el.classList.remove('drag-over');
+            });
+        });
+        
+        setupLinkDragAndDrop();
+    }
+    
+    async function moveFolder(folderId, targetFolderId) {
+        const folder = bookmarkData.folders.find(f => f.id === folderId);
+        if (folder) {
+            // Check if target folder is not a descendant of the folder being moved
+            if (isDescendant(targetFolderId, folderId)) {
+                alert("Cannot move a folder into its own subfolder!");
+                return;
+            }
+            
+            folder.parentId = targetFolderId;
+            await saveData();
+            renderFolders();
+        }
+    }
+    
+    // Check if childId is a descendant of parentId
+    function isDescendant(childId, parentId) {
+        if (childId === parentId) return true;
+        
+        const folder = bookmarkData.folders.find(f => f.id === childId);
+        if (!folder || !folder.parentId) return false;
+        
+        return isDescendant(folder.parentId, parentId);
+    }
+    
+    function setupLinkDragAndDrop() {
+        const linkContainers = document.querySelectorAll('.link-container');
+        linkContainers.forEach(container => {
+            new Sortable(container, {
+                animation: 150,
+                handle: '.drag-handle',
+                ghostClass: 'drag-ghost',
+                group: 'links',
+                onEnd: async function(evt) {
+                    const folderId = evt.to.dataset.folderId;
+                    if (folderId) {
+                        // Update links in the destination folder
+                        updateLinkOrder(folderId);
+                        
+                        // Update links in the source folder if different
+                        if (evt.from !== evt.to && evt.from.dataset.folderId) {
+                            updateLinkOrder(evt.from.dataset.folderId);
+                        }
+                        
+                        await saveData();
+                    }
+                }
+            });
+        });
+    }
+
+    function updateFolderOrder() {
+        const folderElements = document.querySelectorAll('#folderList > .folder');
+        folderElements.forEach((el, index) => {
+            const folderId = el.dataset.folderId;
+            const folder = bookmarkData.folders.find(f => f.id === folderId);
+            if (folder) {
+                folder.order = index;
+            }
+        });
+    }
+
+    function updateLinkOrder(folderId) {
+        const container = document.querySelector(`.link-container[data-folder-id="${folderId}"]`);
+        if (!container) return;
+        
+        const linkElements = container.querySelectorAll('.link-item');
+        linkElements.forEach((el, index) => {
+            const linkId = el.dataset.linkId;
+            const link = bookmarkData.links.find(l => l.id === linkId);
+            if (link) {
+                link.order = index;
+                link.folderId = folderId;
+            }
+        });
+    }
+
+ async function loadData() {
+    try {
+        console.log('Loading data...');
+        const response = await fetch('bookmark_api.php?action=load');
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+            console.log('Data loaded successfully:', data.data);
+            
+            // Create a deep copy to avoid reference issues
+            bookmarkData = JSON.parse(JSON.stringify(data.data));
+            
+            // Ensure notes object exists with default values, but preserve existing data
+            if (!bookmarkData.notes) {
+                bookmarkData.notes = {
+                    content: '',
+                    position: { x: 50, y: 100 },
+                    size: { width: 300, height: 400 }
+                };
+            } else {
+                // Ensure all required properties exist without overwriting existing ones
+                if (bookmarkData.notes.content === undefined) {
+                    bookmarkData.notes.content = '';
+                }
+                if (!bookmarkData.notes.position) {
+                    bookmarkData.notes.position = { x: 50, y: 100 };
+                }
+                if (!bookmarkData.notes.size) {
+                    bookmarkData.notes.size = { width: 300, height: 400 };
+                }
+            }
+            
+            // Ensure arrays exist
+            if (!Array.isArray(bookmarkData.folders)) {
+                bookmarkData.folders = [];
+            }
+            if (!Array.isArray(bookmarkData.links)) {
+                bookmarkData.links = [];
+            }
+            
+            // Add order property if not exists
+            bookmarkData.folders.forEach((folder, index) => {
+                if (!folder.hasOwnProperty('order')) folder.order = index;
+                if (!folder.hasOwnProperty('parentId')) folder.parentId = null;
+            });
+            
+            bookmarkData.links.forEach((link, index) => {
+                if (!link.hasOwnProperty('order')) link.order = index;
+            });
+            
+            renderFolders();
+            renderLinks();
+            
+            // Setup notes window AFTER data is loaded
+            setupNotesWindow();
+            
+            console.log('Data loaded and UI rendered successfully');
+        } else {
+            throw new Error('Invalid response from server');
+        }
+    } catch (error) {
+        console.error('Error loading data:', error);
+        // Even if there's an error, ensure we have a valid structure
+        bookmarkData = { 
+            folders: [], 
+            links: [], 
+            notes: { content: '', position: { x: 50, y: 100 }, size: { width: 300, height: 400 } } 
+        };
+        setupNotesWindow();
+    }
+}  
+
+async function saveData() {
+    try {
+        // Add a small delay to prevent rapid successive saves
+        if (saveData.timeout) {
+            clearTimeout(saveData.timeout);
+        }
+        
+        return new Promise((resolve) => {
+            saveData.timeout = setTimeout(async () => {
+                try {
+                    const response = await fetch('bookmark_api.php', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ action: 'save', data: bookmarkData })
+                    });
+                    const result = await response.json();
+                    
+                    if (!result.success) {
+                        console.error('Save failed:', result.error);
+                    }
+                    
+                    resolve(result.success);
+                } catch (error) {
+                    console.error('Error saving data:', error);
+                    resolve(false);
+                }
+            }, 100); // Small delay to batch rapid saves
+        });
+    } catch (error) {
+        console.error('Error in saveData:', error);
+        return false;
+    }
+}
+
+    function renderFolders() {
+        const folderList = document.getElementById('folderList');
+        folderList.innerHTML = '';
+        
+        // Sort folders by order
+        const rootFolders = bookmarkData.folders
+            .filter(folder => !folder.parentId)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        rootFolders.forEach(folder => {
+            const folderElement = createFolderElement(folder);
+            folderList.appendChild(folderElement);
+        });
+        
+        updateFolderSelect();
+        updateParentFolderSelect();
+    }
+    
+    function createFolderElement(folder) {
+        const folderDiv = document.createElement('div');
+        folderDiv.className = 'folder';
+        if (currentFolder === folder.id) {
+            folderDiv.classList.add('selected');
+        }
+        folderDiv.dataset.folderId = folder.id;
+        folderDiv.draggable = true;
+        
+        const linkCount = bookmarkData.links.filter(link => link.folderId === folder.id).length;
+        const subfolders = bookmarkData.folders.filter(f => f.parentId === folder.id)
+            .sort((a, b) => (a.order || 0) - (b.order || 0));
+        
+        folderDiv.innerHTML = `
+            <div class="folder-header" onclick="toggleFolder('${folder.id}')">
+                <div class="folder-title">
+                    <span class="drag-handle">≡</span>
+                    <i class="folder-icon" id="folder-icon-${folder.id}">📁</i>
+                    ${folder.name} <span class="folder-count">(${linkCount})</span>
+                </div>
+                <div class="folder-actions">
+                    <button class="action-btn" onclick="event.stopPropagation(); editFolder('${folder.id}')">Edit</button>
+                    <button class="action-btn" onclick="event.stopPropagation(); deleteFolder('${folder.id}')">Del</button>
+                </div>
+            </div>
+            <div class="folder-content" id="content-${folder.id}">
+                <div class="subfolder-container" id="subfolder-${folder.id}"></div>
+            </div>
+        `;
+        
+        return folderDiv;
+    }
+
+        // function to create backups
+    function createBackup() {
+        const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        const backupData = JSON.stringify(bookmarkData, null, 2);
+        localStorage.setItem(`bookmark_backup_${timestamp}`, backupData);
+        
+        // Keep only last 5 backups
+        const keys = Object.keys(localStorage).filter(key => key.startsWith('bookmark_backup_'));
+        if (keys.length > 5) {
+            keys.sort();
+            keys.slice(0, -5).forEach(key => localStorage.removeItem(key));
+        }
+    }
+    
+    // Call this before any major operation
+    async function saveDataWithBackup() {
+        createBackup();
+        return await saveData();
+    }
+
+    function toggleFolder(folderId) {
+        const folder = document.querySelector(`[data-folder-id="${folderId}"]`);
+        const folderIcon = document.getElementById(`folder-icon-${folderId}`);
+        
+        // Remove 'selected' class from all folders
+        document.querySelectorAll('.folder').forEach(f => {
+            f.classList.remove('selected');
+        });
+        
+        // Add 'selected' class to the clicked folder
+        folder.classList.add('selected');
+        
+        if (folder.classList.contains('expanded')) {
+            folder.classList.remove('expanded');
+            folderIcon.textContent = '📁';
+            folderIcon.classList.remove('open');
+        } else {
+            folder.classList.add('expanded');
+            folderIcon.textContent = '📂';
+            folderIcon.classList.add('open');
+            
+            // Render subfolders
+            const subfolderContainer = document.getElementById(`subfolder-${folderId}`);
+            if (subfolderContainer) {
+                subfolderContainer.innerHTML = '';
+                
+                const subfolders = bookmarkData.folders
+                    .filter(f => f.parentId === folderId)
+                    .sort((a, b) => (a.order || 0) - (b.order || 0));
+                
+                subfolders.forEach(subfolder => {
+                    const folderElement = createFolderElement(subfolder);
+                    subfolderContainer.appendChild(folderElement);
+                });
+                
+                // Setup sortable for subfolders
+                new Sortable(subfolderContainer, {
+                    animation: 150,
+                    handle: '.drag-handle',
+                    ghostClass: 'drag-ghost',
+                    group: 'folders',
+                    onEnd: async function() {
+                        updateSubfolderOrder(folderId);
+                        await saveData();
+                    }
+                });
+            }
+        }
+        
+        currentFolder = folderId;
+        renderLinks();
+    }
+    
+    function updateSubfolderOrder(parentId) {
+        const container = document.getElementById(`subfolder-${parentId}`);
+        if (!container) return;
+        
+        const folderElements = container.querySelectorAll('.folder');
+        folderElements.forEach((el, index) => {
+            const folderId = el.dataset.folderId;
+            const folder = bookmarkData.folders.find(f => f.id === folderId);
+            if (folder) {
+                folder.order = index;
+                folder.parentId = parentId;
+            }
+        });
+    }
+
+    function renderLinks() {
+        const linkList = document.getElementById('linkList');
+        linkList.innerHTML = '';
+        
+        if (!currentFolder && !searchTerm) {
+            linkList.innerHTML = '<div class="empty-state">Select a folder to view links</div>';
+            return;
+        }
+        
+        let linksToShow;
+        
+        if (searchTerm) {
+            linksToShow = bookmarkData.links.filter(link => 
+                link.title.toLowerCase().includes(searchTerm) || 
+                link.url.toLowerCase().includes(searchTerm)
+            ).sort((a, b) => (a.order || 0) - (b.order || 0));
+            
+            if (linksToShow.length === 0) {
+                linkList.innerHTML = '<div class="empty-state">No matching links found</div>';
+                return;
+            }
+            
+            linkList.innerHTML = `
+                <div class="folder-header-big">
+                    <h2>Search Results</h2>
+                </div>
+                <div class="link-container" id="main-link-container"></div>
+            `;
+        } else if (currentFolder) {
+            linksToShow = bookmarkData.links
+                .filter(link => link.folderId === currentFolder)
+                .sort((a, b) => (a.order || 0) - (b.order || 0));
+                
+            const folder = bookmarkData.folders.find(f => f.id === currentFolder);
+            const folderName = folder ? folder.name : '';
+            
+            linkList.innerHTML = `
+                <div class="folder-header-big">
+                    <h2><i class="folder-icon">📂</i> ${folderName}</h2>
+                </div>
+                <div class="link-container" id="main-link-container" data-folder-id="${currentFolder}"></div>
+            `;
+            
+            if (linksToShow.length === 0) {
+                document.getElementById('main-link-container').innerHTML = 
+                    '<div class="empty-state">No links in this folder</div>';
+                return;
+            }
+        } else {
+            return;
+        }
+        
+        const container = document.getElementById('main-link-container');
+        
+        linksToShow.forEach(link => {
+            const linkDiv = createLinkElement(link);
+            container.appendChild(linkDiv);
+        });
+        
+        // Setup sortable for links container
+        new Sortable(container, {
+            animation: 150,
+            handle: '.drag-handle',
+            ghostClass: 'drag-ghost',
+            group: 'links',
+            onEnd: async function() {
+                if (currentFolder) {
+                    updateLinkOrder(currentFolder);
+                    await saveData();
+                }
+            }
+        });
+    }
+    
+    function createLinkElement(link) {
+        const linkDiv = document.createElement('div');
+        linkDiv.className = 'link-item';
+        linkDiv.dataset.linkId = link.id;
+        linkDiv.draggable = true;
+        
+        const folder = bookmarkData.folders.find(f => f.id === link.folderId);
+        const folderName = folder ? folder.name : 'No folder';
+        
+        // Get favicon URL
+        let faviconUrl;
+        try {
+            faviconUrl = `https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}`;
+        } catch (e) {
+            faviconUrl = ''; // Invalid URL
+        }
+        
+        linkDiv.innerHTML = `
+            <span class="drag-handle">≡</span>
+            <img class="favicon" src="${faviconUrl}" onerror="this.src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH4QUFDTgmJYgH6QAAAIpJREFUOMvd0CEOwkAUhOH/LYEEsYhijasIakp7AHqEHoJbcITS3oFggm0waEmANVmVYgPBbDDF8yXzzMy+SZr40yqyCWrM0OLc50vUeKKJGVZ40CwxwghTpCyf+GAeR1hjF3P+xt3+zbDENSROnfjeOF8PmVOWu5C0R1jAn0QTnLAtG/5KGwpMsMeui/8JHRfTLSexER0AAAAASUVORK5CYII='" alt="">
+            <div class="link-title">${link.title}</div>
+            <a href="${link.url}" target="_blank" class="link-url">${link.url}</a>
+            ${searchTerm ? `<div style="font-size: 10px; color: #888; margin-left: auto; margin-right: 8px;">${folderName}</div>` : ''}
+            <div class="link-actions">
+                <button class="action-btn" onclick="editLink('${link.id}')">Edit</button>
+                <button class="action-btn" onclick="deleteLink('${link.id}')">Del</button>
+            </div>
+        `;
+        
+        return linkDiv;
+    }
+
+    function updateFolderSelect() {
+        const select = document.getElementById('linkFolder');
+        if (!select) return;
+        
+        select.innerHTML = '<option value="">Select folder...</option>';
+        
+        // Function to recursively add folders with proper indentation
+        function addFoldersRecursive(folders, level = 0, parentId = null) {
+            const indent = '—'.repeat(level);
+            
+            folders
+                .filter(folder => folder.parentId === parentId)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .forEach(folder => {
+                    const option = document.createElement('option');
+                    option.value = folder.id;
+                    option.textContent = indent + ' ' + folder.name;
+                    select.appendChild(option);
+                    
+                    // Add children
+                    addFoldersRecursive(folders, level + 1, folder.id);
+                });
+        }
+        
+        addFoldersRecursive(bookmarkData.folders);
+    }
+    
+    function updateParentFolderSelect() {
+        const select = document.getElementById('parentFolder');
+        if (!select) return;
+        
+        select.innerHTML = '<option value="">None (Root level)</option>';
+        
+        // Function to recursively add folders with proper indentation
+        function addFoldersRecursive(folders, level = 0, parentId = null, currentId = null) {
+            const indent = '—'.repeat(level);
+            
+            folders
+                .filter(folder => folder.parentId === parentId && folder.id !== currentId)
+                .sort((a, b) => (a.order || 0) - (b.order || 0))
+                .forEach(folder => {
+                    // Skip this folder and its children if it's the one we're editing
+                    if (folder.id === currentEditId) return;
+                    
+                    const option = document.createElement('option');
+                    option.value = folder.id;
+                    option.textContent = indent + ' ' + folder.name;
+                    select.appendChild(option);
+                    
+                    // Add children only if they're not descendants of currentEditId
+                    if (!isDescendant(folder.id, currentEditId)) {
+                        addFoldersRecursive(folders, level + 1, folder.id, currentEditId);
+                    }
+                });
+        }
+        
+        addFoldersRecursive(bookmarkData.folders);
+    }
+
+    // Modal functions
+    function showAddFolderModal() {
+        currentEditId = null;
+        document.getElementById('folderName').value = '';
+        document.getElementById('parentFolder').value = '';
+        updateParentFolderSelect();
+        document.getElementById('folderModal').style.display = 'block';
+    }
+
+    function showAddLinkModal() {
+        currentEditId = null;
+        document.getElementById('linkTitle').value = '';
+        document.getElementById('linkUrl').value = '';
+        document.getElementById('linkFolder').value = currentFolder || '';
+        document.getElementById('linkModal').style.display = 'block';
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    function editFolder(folderId) {
+        const folder = bookmarkData.folders.find(f => f.id === folderId);
+        if (folder) {
+            currentEditId = folderId;
+            document.getElementById('folderName').value = folder.name;
+            document.getElementById('parentFolder').value = folder.parentId || '';
+            updateParentFolderSelect(); // Update without current folder as an option
+            document.getElementById('folderModal').style.display = 'block';
+        }
+    }
+
+    function editLink(linkId) {
+        const link = bookmarkData.links.find(l => l.id === linkId);
+        if (link) {
+            currentEditId = linkId;
+            document.getElementById('linkTitle').value = link.title;
+            document.getElementById('linkUrl').value = link.url;
+            document.getElementById('linkFolder').value = link.folderId;
+            document.getElementById('linkModal').style.display = 'block';
+        }
+    }
+
+    async function saveFolder() {
+        const name = document.getElementById('folderName').value.trim();
+        const parentId = document.getElementById('parentFolder').value || null;
+        if (!name) return;
+
+        if (currentEditId) {
+            const folder = bookmarkData.folders.find(f => f.id === currentEditId);
+            if (folder) {
+                // Check if trying to make a folder a child of one of its descendants
+                if (parentId && isDescendant(parentId, folder.id)) {
+                    alert('Cannot make a folder a child of one of its own subfolders!');
+                    return;
+                }
+                
+                folder.name = name;
+                folder.parentId = parentId;
+            }
+        } else {
+            const newFolder = {
+                id: Date.now().toString(),
+                name: name,
+                parentId: parentId,
+                order: bookmarkData.folders.length
+            };
+            bookmarkData.folders.push(newFolder);
+        }
+
+        await saveData();
+        renderFolders();
+        closeModal('folderModal');
+    }
+
+    async function saveLink() {
+        const title = document.getElementById('linkTitle').value.trim();
+        const url = document.getElementById('linkUrl').value.trim();
+        const folderId = document.getElementById('linkFolder').value;
+
+        if (!title || !url) return;
+        
+        // Add http:// if no protocol specified
+        let processedUrl = url;
+        if (!/^https?:\/\//i.test(processedUrl)) {
+            processedUrl = 'http://' + processedUrl;
+        }
+
+        if (currentEditId) {
+            const link = bookmarkData.links.find(l => l.id === currentEditId);
+            if (link) {
+                link.title = title;
+                link.url = processedUrl;
+                link.folderId = folderId;
+            }
+        } else {
+            bookmarkData.links.push({
+                id: Date.now().toString(),
+                title: title,
+                url: processedUrl,
+                folderId: folderId,
+                order: bookmarkData.links.filter(l => l.folderId === folderId).length
+            });
+        }
+
+        await saveData();
+        renderFolders();
+        renderLinks();
+        closeModal('linkModal');
+    }
+
+    async function deleteFolder(folderId) {
+        if (!confirm('Delete folder and all its links?')) return;
+        
+        // First, get all descendant folder IDs
+        const descendantIds = getAllDescendantFolderIds(folderId);
+        const allFolderIdsToDelete = [folderId, ...descendantIds];
+        
+        // Remove all folders and their links
+        bookmarkData.folders = bookmarkData.folders.filter(f => !allFolderIdsToDelete.includes(f.id));
+        bookmarkData.links = bookmarkData.links.filter(l => !allFolderIdsToDelete.includes(l.folderId));
+        
+        await saveData();
+        if (currentFolder === folderId) {
+            currentFolder = null;
+        }
+        renderFolders();
+        renderLinks();
+    }
+    
+    function getAllDescendantFolderIds(folderId) {
+        const result = [];
+        const childFolders = bookmarkData.folders.filter(f => f.parentId === folderId);
+        
+        childFolders.forEach(folder => {
+            result.push(folder.id);
+            const descendants = getAllDescendantFolderIds(folder.id);
+            result.push(...descendants);
+        });
+        
+        return result;
+    }
+
+    async function deleteLink(linkId) {
+        if (!confirm('Delete this link?')) return;
+        
+        bookmarkData.links = bookmarkData.links.filter(l => l.id !== linkId);
+        await saveData();
+        renderFolders();
+        renderLinks();
+    }
+
+    async function moveLink(linkId, folderId) {
+        const link = bookmarkData.links.find(l => l.id === linkId);
+        if (link) {
+            const oldFolderId = link.folderId;
+            link.folderId = folderId;
+            link.order = bookmarkData.links.filter(l => l.folderId === folderId).length;
+            await saveData();
+            
+            // Update folder counts in UI
+            renderFolders();
+            
+            // If the current view is the source or destination folder, update it
+            if (currentFolder === oldFolderId || currentFolder === folderId) {
+                renderLinks();
+            }
+        }
+    }
+
+    function exportData() {
+        const dataStr = JSON.stringify(bookmarkData, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'bookmarks.json';
+        link.click();
+    }
+
+    function importData(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+                    if (confirm('Replace all current bookmarks and notes with imported data?')) {
+                        bookmarkData = imported;
+                        
+                        // Ensure notes object exists
+                        if (!bookmarkData.notes) {
+                            bookmarkData.notes = {
+                                content: '',
+                                position: { x: 50, y: 100 },
+                                size: { width: 300, height: 400 }
+                            };
+                        }
+                        
+                        await saveData();
+                        renderFolders();
+                        renderLinks();
+                        
+                        // Update notes window if it's open
+                        const notesTextarea = document.getElementById('notesTextarea');
+                        const notesWindow = document.getElementById('notesWindow');
+                        if (notesTextarea) {
+                            notesTextarea.value = bookmarkData.notes.content || '';
+                        }
+                        
+                        // Update notes window position and size
+                        if (bookmarkData.notes.position) {
+                            notesWindow.style.left = bookmarkData.notes.position.x + 'px';
+                            notesWindow.style.top = bookmarkData.notes.position.y + 'px';
+                        }
+                        if (bookmarkData.notes.size) {
+                            notesWindow.style.width = bookmarkData.notes.size.width + 'px';
+                            notesWindow.style.height = bookmarkData.notes.size.height + 'px';
+                        }
+                    }
+                } catch (error) {
+                    alert('Invalid JSON file');
+                }
+            };
+            reader.readAsText(file);
+        }
+    }
+</script>
+</body>
+</html>
