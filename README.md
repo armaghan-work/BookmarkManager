@@ -1,4 +1,4 @@
-# 📚 Bookmark Manager
+# Bookmark Manager
 
 A modern, feature-rich bookmark management application with rich text notes, drag-and-drop organization, and a clean, intuitive interface.
 
@@ -8,7 +8,7 @@ A modern, feature-rich bookmark management application with rich text notes, dra
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
 
-## 📸 Interface Preview
+## Interface Preview
 
 ![Bookmark Manager Interface](assets/interface-screenshot.png)
 
@@ -378,7 +378,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Issues**: [GitHub Issues](https://github.com/armaghan-work/BookmarkManager/issues)
 - **Discussions**: [GitHub Discussions](https://github.com/armaghan-work/BookmarkManager/discussions)
-- **Email**: your.email@example.com
 
 ---
 
