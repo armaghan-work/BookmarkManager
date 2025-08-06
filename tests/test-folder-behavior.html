@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Folder Behavior Tests</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        .test-container {
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .test-section {
+            margin-bottom: 30px;
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .test-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        .test-results {
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f5f5f5;
+            border-radius: 3px;
+        }
+
+        .test-pass {
+            color: green;
+            font-weight: bold;
+        }
+
+        .test-fail {
+            color: red;
+            font-weight: bold;
+        }
+
+        .test-info {
+            color: blue;
+            font-style: italic;
+        }
+
+        .test-controls {
+            margin: 10px 0;
+        }
+
+        .test-controls button {
+            margin-right: 10px;
+            padding: 5px 10px;
+            background-color: #007cba;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .test-controls button:hover {
+            background-color: #005a87;
+        }
+
+        .main-test {
+            display: flex;
+            gap: 20px;
+        }
+
+        .test-sidebar {
+            width: 300px;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+
+        .test-content {
+            flex: 1;
+            border: 1px solid #ccc;
+            padding: 10px;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.14.0/Sortable.min.js"></script>
+    <script src="js/content-sanitizer.js"></script>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>Folder Auto-Close Behavior Tests</h1>
+
+        <div class="test-section">
+            <h3>Test Environment Setup</h3>
+            <div class="test-controls">
+                <button onclick="setupTestData()">Setup Test Data</button>
+                <button onclick="resetTestEnvironment()">Reset Environment</button>
+                <button onclick="runAllTests()">Run All Tests</button>
+            </div>
+            <div id="setup-results" class="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 1: Folders Without Subfolders Auto-Close</h3>
+            <p>Tests that folders without subfolders automatically close when another folder is clicked.</p>
+            <div class="test-controls">
+                <button onclick="testEmptyFoldersAutoClose()">Run Test</button>
+            </div>
+            <div id="test1-results" class="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 2: Folders With Subfolders Remain Open</h3>
+            <p>Tests that folders with subfolders remain open when other folders are clicked.</p>
+            <div class="test-controls">
+                <button onclick="testFoldersWithSubfoldersStayOpen()">Run Test</button>
+            </div>
+            <div id="test2-results" class="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 3: Visual Feedback (Folder Icons)</h3>
+            <p>Tests that folder icons correctly reflect the open/closed state.</p>
+            <div class="test-controls">
+                <button onclick="testVisualFeedback()">Run Test</button>
+            </div>
+            <div id="test3-results" class="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 4: Edge Cases</h3>
+            <p>Tests rapid clicking, empty folder data, and other edge cases.</p>
+            <div class="test-controls">
+                <button onclick="testEdgeCases()">Run Test</button>
+            </div>
+            <div id="test4-results" class="test-results"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>Test 5: Same Folder Toggle Behavior</h3>
+            <p>Tests that clicking the same folder twice toggles it correctly.</p>
+            <div class="test-controls">
+                <button onclick="testSameFolderToggle()">Run Test</button>
+            </div>
+            <div id="test5-results" class="test-results"></div>
+        </div>
+
+        <div class="main-test">
+            <div class="test-sidebar">
+                <h4>Test Folder Structure</h4>
+                <div id="folderList"></div>
+            </div>
+            <div class="test-content">
+                <h4>Current Folder Content</h4>
+                <div id="linkList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Test utilities and data
+        let testResults = [];
+        let originalBookmarkData = null;
+
+        function logTest(testName, passed, message) {
+            const result = {
+                test: testName,
+                passed: passed,
+                message: message,
+                timestamp: new Date().toISOString()
+            };
+            testResults.push(result);
+            console.log(`${passed ? '✓' : '✗'} ${testName}: ${message}`);
+        }
+
+        function displayResults(containerId, results) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = results.map(result =>
+                `<div class="${result.passed ? 'test-pass' : 'test-fail'}">
+                    ${result.passed ? '✓' : '✗'} ${result.message}
+                </div>`
+            ).join('');
+        }
+
+        function setupTestData() {
+            // Save original data if it exists
+            if (bookmarkData && bookmarkData.folders) {
+                originalBookmarkData = JSON.parse(JSON.stringify(bookmarkData));
+            }
+
+            // Create test folder structure
+            bookmarkData = {
+                folders: [
+                    // Root level folders
+                    {
+                        id: 'folder1',
+                        name: 'Empty Folder 1',
+                        parentId: null,
+                        order: 1
+                    },
+                    {
+                        id: 'folder2',
+                        name: 'Empty Folder 2',
+                        parentId: null,
+                        order: 2
+                    },
+                    {
+                        id: 'folder3',
+                        name: 'Parent Folder 1',
+                        parentId: null,
+                        order: 3
+                    },
+                    {
+                        id: 'folder4',
+                        name: 'Parent Folder 2',
+                        parentId: null,
+                        order: 4
+                    },
+                    {
+                        id: 'folder5',
+                        name: 'Empty Folder 3',
+                        parentId: null,
+                        order: 5
+                    },
+
+                    // Subfolders
+                    {
+                        id: 'subfolder1',
+                        name: 'Subfolder 1.1',
+                        parentId: 'folder3',
+                        order: 1
+                    },
+                    {
+                        id: 'subfolder2',
+                        name: 'Subfolder 1.2',
+                        parentId: 'folder3',
+                        order: 2
+                    },
+                    {
+                        id: 'subfolder3',
+                        name: 'Subfolder 2.1',
+                        parentId: 'folder4',
+                        order: 1
+                    },
+
+                    // Nested subfolders
+                    {
+                        id: 'nested1',
+                        name: 'Nested 1.1.1',
+                        parentId: 'subfolder1',
+                        order: 1
+                    }
+                ],
+                links: [{
+                        id: 'link1',
+                        title: 'Test Link 1',
+                        url: 'https://example1.com',
+                        folderId: 'folder1'
+                    },
+                    {
+                        id: 'link2',
+                        title: 'Test Link 2',
+                        url: 'https://example2.com',
+                        folderId: 'subfolder1'
+                    }
+                ],
+                notes: {
+                    content: '<p></p>',
+                    plainContent: '',
+                    position: {
+                        x: 50,
+                        y: 100
+                    },
+                    size: {
+                        width: 300,
+                        height: 400
+                    },
+                    formatVersion: '1.0'
+                }
+            };
+
+            // Render the test structure
+            renderFolders();
+            renderLinks();
+
+            const setupResults = document.getElementById('setup-results');
+            setupResults.innerHTML = '<div class="test-pass">✓ Test data setup complete</div>';
+
+            logTest('Setup', true, 'Test folder structure created with empty folders and folders with subfolders');
+        }
+
+        function resetTestEnvironment() {
+            // Clear all expanded states
+            document.querySelectorAll('.folder').forEach(folder => {
+                folder.classList.remove('expanded', 'selected');
+            });
+
+            // Reset all folder icons
+            document.querySelectorAll('[id^="folder-icon-"]').forEach(icon => {
+                icon.textContent = '📁';
+                icon.classList.remove('open');
+            });
+
+            // Clear current folder
+            currentFolder = null;
+
+            const setupResults = document.getElementById('setup-results');
+            setupResults.innerHTML = '<div class="test-info">Environment reset - all folders closed</div>';
+        }
+
+        function testEmptyFoldersAutoClose() {
+            const results = [];
+
+            try {
+                // Reset environment first
+                resetTestEnvironment();
+
+                // Test 1: Click empty folder, then another empty folder
+                toggleFolder('folder1');
+                const folder1AfterClick = document.querySelector('[data-folder-id="folder1"]');
+                const folder1Icon = document.getElementById('folder-icon-folder1');
+
+                if (folder1AfterClick.classList.contains('expanded') && folder1Icon.textContent === '📂') {
+                    logTest('Empty Folder Click', true, 'Empty folder 1 opens correctly');
+                    results.push({
+                        passed: true,
+                        message: 'Empty folder 1 opens correctly'
+                    });
+                } else {
+                    logTest('Empty Folder Click', false, 'Empty folder 1 failed to open');
+                    results.push({
+                        passed: false,
+                        message: 'Empty folder 1 failed to open'
+                    });
+                }
+
+                // Click second empty folder
+                toggleFolder('folder2');
+                const folder1AfterSecondClick = document.querySelector('[data-folder-id="folder1"]');
+                const folder2AfterClick = document.querySelector('[data-folder-id="folder2"]');
+                const folder1IconAfter = document.getElementById('folder-icon-folder1');
+                const folder2Icon = document.getElementById('folder-icon-folder2');
+
+                // Check that folder1 auto-closed
+                if (!folder1AfterSecondClick.classList.contains('expanded') && folder1IconAfter.textContent === '📁') {
+                    logTest('Auto-Close Empty', true, 'Empty folder 1 auto-closed when folder 2 was clicked');
+                    results.push({
+                        passed: true,
+                        message: 'Empty folder 1 auto-closed correctly'
+                    });
+                } else {
+                    logTest('Auto-Close Empty', false, 'Empty folder 1 did not auto-close');
+                    results.push({
+                        passed: false,
+                        message: 'Empty folder 1 did not auto-close'
+                    });
+                }
+
+                // Check that folder2 is open
+                if (folder2AfterClick.classList.contains('expanded') && folder2Icon.textContent === '📂') {
+                    logTest('New Folder Open', true, 'Empty folder 2 opened correctly');
+                    results.push({
+                        passed: true,
+                        message: 'Empty folder 2 opened correctly'
+                    });
+                } else {
+                    logTest('New Folder Open', false, 'Empty folder 2 failed to open');
+                    results.push({
+                        passed: false,
+                        message: 'Empty folder 2 failed to open'
+                    });
+                }
+
+            } catch (error) {
+                logTest('Empty Folders Auto-Close', false, `Test failed with error: ${error.message}`);
+                results.push({
+                    passed: false,
+                    message: `Test failed with error: ${error.message}`
+                });
+            }
+
+            displayResults('test1-results', results);
+        }
+
+        function testFoldersWithSubfoldersStayOpen() {
+            const results = [];
+
+            try {
+                resetTestEnvironment();
+
+                // Click folder with subfolders
+                toggleFolder('folder3');
+                const folder3AfterClick = document.querySelector('[data-folder-id="folder3"]');
+                const folder3Icon = document.getElementById('folder-icon-folder3');
+
+                if (folder3AfterClick.classList.contains('expanded') && folder3Icon.textContent === '📂') {
+                    logTest('Parent Folder Open', true, 'Parent folder 3 opens correctly');
+                    results.push({
+                        passed: true,
+                        message: 'Parent folder 3 opens correctly'
+                    });
+                } else {
+                    logTest('Parent Folder Open', false, 'Parent folder 3 failed to open');
+                    results.push({
+                        passed: false,
+                        message: 'Parent folder 3 failed to open'
+                    });
+                }
+
+                // Click another folder with subfolders
+                toggleFolder('folder4');
+                const folder3AfterSecondClick = document.querySelector('[data-folder-id="folder3"]');
+                const folder4AfterClick = document.querySelector('[data-folder-id="folder4"]');
+                const folder3IconAfter = document.getElementById('folder-icon-folder3');
+                const folder4Icon = document.getElementById('folder-icon-folder4');
+
+                // Check that folder3 stays open (has subfolders)
+                if (folder3AfterSecondClick.classList.contains('expanded') && folder3IconAfter.textContent === '📂') {
+                    logTest('Parent Stays Open', true, 'Parent folder 3 stayed open when folder 4 was clicked');
+                    results.push({
+                        passed: true,
+                        message: 'Parent folder 3 stayed open correctly'
+                    });
+                } else {
+                    logTest('Parent Stays Open', false, 'Parent folder 3 incorrectly closed');
+                    results.push({
+                        passed: false,
+                        message: 'Parent folder 3 incorrectly closed'
+                    });
+                }
+
+                // Check that folder4 is also open
+                if (folder4AfterClick.classList.contains('expanded') && folder4Icon.textContent === '📂') {
+                    logTest('Second Parent Open', true, 'Parent folder 4 opened correctly');
+                    results.push({
+                        passed: true,
+                        message: 'Parent folder 4 opened correctly'
+                    });
+                } else {
+                    logTest('Second Parent Open', false, 'Parent folder 4 failed to open');
+                    results.push({
+                        passed: false,
+                        message: 'Parent folder 4 failed to open'
+                    });
+                }
+
+                // Now click an empty folder and verify parents stay open
+                toggleFolder('folder5');
+                const folder3Final = document.querySelector('[data-folder-id="folder3"]');
+                const folder4Final = document.querySelector('[data-folder-id="folder4"]');
+                const folder5Final = document.querySelector('[data-folder-id="folder5"]');
+
+                if (folder3Final.classList.contains('expanded') && folder4Final.classList.contains('expanded')) {
+                    logTest('Parents Stay Open vs Empty', true, 'Parent folders stayed open when empty folder was clicked');
+                    results.push({
+                        passed: true,
+                        message: 'Parent folders stayed open when empty folder was clicked'
+                    });
+                } else {
+                    logTest('Parents Stay Open vs Empty', false, 'Parent folders incorrectly closed when empty folder was clicked');
+                    results.push({
+                        passed: false,
+                        message: 'Parent folders incorrectly closed when empty folder was clicked'
+                    });
+                }
+
+            } catch (error) {
+                logTest('Folders With Subfolders Stay Open', false, `Test failed with error: ${error.message}`);
+                results.push({
+                    passed: false,
+                    message: `Test failed with error: ${error.message}`
+                });
+            }
+
+            displayResults('test2-results', results);
+        }
+
+        function testVisualFeedback() {
+            const results = [];
+
+            try {
+                resetTestEnvironment();
+
+                // Test initial state - all folders should show closed icon
+                const allFolderIcons = document.querySelectorAll('[id^="folder-icon-"]');
+                let allInitiallyClosed = true;
+                allFolderIcons.forEach(icon => {
+                    if (icon.textContent !== '📁') {
+                        allInitiallyClosed = false;
+                    }
+                });
+
+                if (allInitiallyClosed) {
+                    logTest('Initial Icons', true, 'All folder icons start as closed (📁)');
+                    results.push({
+                        passed: true,
+                        message: 'All folder icons start as closed (📁)'
+                    });
+                } else {
+                    logTest('Initial Icons', false, 'Some folder icons are not in closed state initially');
+                    results.push({
+                        passed: false,
+                        message: 'Some folder icons are not in closed state initially'
+                    });
+                }
+
+                // Test opening folder changes icon
+                toggleFolder('folder1');
+                const folder1Icon = document.getElementById('folder-icon-folder1');
+                if (folder1Icon.textContent === '📂') {
+                    logTest('Open Icon', true, 'Folder icon changes to open (📂) when clicked');
+                    results.push({
+                        passed: true,
+                        message: 'Folder icon changes to open (📂) when clicked'
+                    });
+                } else {
+                    logTest('Open Icon', false, `Folder icon is "${folder1Icon.textContent}" instead of open (📂)`);
+                    results.push({
+                        passed: false,
+                        message: `Folder icon is "${folder1Icon.textContent}" instead of open (📂)`
+                    });
+                }
+
+                // Test auto-close changes icon back
+                toggleFolder('folder2');
+                const folder1IconAfter = document.getElementById('folder-icon-folder1');
+                const folder2Icon = document.getElementById('folder-icon-folder2');
+
+                if (folder1IconAfter.textContent === '📁') {
+                    logTest('Auto-Close Icon', true, 'Auto-closed folder icon changes back to closed (📁)');
+                    results.push({
+                        passed: true,
+                        message: 'Auto-closed folder icon changes back to closed (📁)'
+                    });
+                } else {
+                    logTest('Auto-Close Icon', false, `Auto-closed folder icon is "${folder1IconAfter.textContent}" instead of closed (📁)`);
+                    results.push({
+                        passed: false,
+                        message: `Auto-closed folder icon is "${folder1IconAfter.textContent}" instead of closed (📁)`
+                    });
+                }
+
+                if (folder2Icon.textContent === '📂') {
+                    logTest('New Open Icon', true, 'Newly opened folder shows open icon (📂)');
+                    results.push({
+                        passed: true,
+                        message: 'Newly opened folder shows open icon (📂)'
+                    });
+                } else {
+                    logTest('New Open Icon', false, `Newly opened folder icon is "${folder2Icon.textContent}" instead of open (📂)`);
+                    results.push({
+                        passed: false,
+                        message: `Newly opened folder icon is "${folder2Icon.textContent}" instead of open (📂)`
+                    });
+                }
+
+            } catch (error) {
+                logTest('Visual Feedback', false, `Test failed with error: ${error.message}`);
+                results.push({
+                    passed: false,
+                    message: `Test failed with error: ${error.message}`
+                });
+            }
+
+            displayResults('test3-results', results);
+        }
+
+        function testEdgeCases() {
+            const results = [];
+
+            try {
+                // Test 1: Rapid clicking
+                resetTestEnvironment();
+
+                // Rapid click test
+                toggleFolder('folder1');
+                toggleFolder('folder2');
+                toggleFolder('folder1');
+                toggleFolder('folder3');
+
+                // Check final state
+                const folder1 = document.querySelector('[data-folder-id="folder1"]');
+                const folder2 = document.querySelector('[data-folder-id="folder2"]');
+                const folder3 = document.querySelector('[data-folder-id="folder3"]');
+
+                // After rapid clicking, only folder3 (with subfolders) should be open
+                if (!folder1.classList.contains('expanded') && !folder2.classList.contains('expanded') && folder3.classList.contains('expanded')) {
+                    logTest('Rapid Clicking', true, 'Rapid clicking handled correctly - only final folder with subfolders remains open');
+                    results.push({
+                        passed: true,
+                        message: 'Rapid clicking handled correctly'
+                    });
+                } else {
+                    logTest('Rapid Clicking', false, 'Rapid clicking resulted in incorrect folder states');
+                    results.push({
+                        passed: false,
+                        message: 'Rapid clicking resulted in incorrect folder states'
+                    });
+                }
+
+                // Test 2: Empty folder data
+                const originalFolders = bookmarkData.folders;
+                bookmarkData.folders = [];
+
+                try {
+                    // This should not throw an error
+                    toggleFolder('nonexistent');
+                    logTest('Empty Data', true, 'Empty folder data handled gracefully');
+                    results.push({
+                        passed: true,
+                        message: 'Empty folder data handled gracefully'
+                    });
+                } catch (error) {
+                    logTest('Empty Data', false, `Empty folder data caused error: ${error.message}`);
+                    results.push({
+                        passed: false,
+                        message: `Empty folder data caused error: ${error.message}`
+                    });
+                }
+
+                // Restore data
+                bookmarkData.folders = originalFolders;
+
+                // Test 3: Non-existent folder ID
+                try {
+                    toggleFolder('nonexistent-folder');
+                    logTest('Non-existent Folder', true, 'Non-existent folder ID handled gracefully');
+                    results.push({
+                        passed: true,
+                        message: 'Non-existent folder ID handled gracefully'
+                    });
+                } catch (error) {
+                    logTest('Non-existent Folder', false, `Non-existent folder ID caused error: ${error.message}`);
+                    results.push({
+                        passed: false,
+                        message: `Non-existent folder ID caused error: ${error.message}`
+                    });
+                }
+
+                // Test 4: hasSubfolders function edge cases
+                const hasSubfoldersResult1 = hasSubfolders('folder1'); // Should be false
+                const hasSubfoldersResult2 = hasSubfolders('folder3'); // Should be true
+                const hasSubfoldersResult3 = hasSubfolders('nonexistent'); // Should be false
+
+                if (!hasSubfoldersResult1 && hasSubfoldersResult2 && !hasSubfoldersResult3) {
+                    logTest('hasSubfolders Function', true, 'hasSubfolders function works correctly for all cases');
+                    results.push({
+                        passed: true,
+                        message: 'hasSubfolders function works correctly'
+                    });
+                } else {
+                    logTest('hasSubfolders Function', false, `hasSubfolders results: empty=${hasSubfoldersResult1}, parent=${hasSubfoldersResult2}, nonexistent=${hasSubfoldersResult3}`);
+                    results.push({
+                        passed: false,
+                        message: 'hasSubfolders function returned incorrect results'
+                    });
+                }
+
+            } catch (error) {
+                logTest('Edge Cases', false, `Test failed with error: ${error.message}`);
+                results.push({
+                    passed: false,
+                    message: `Test failed with error: ${error.message}`
+                });
+            }
+
+            displayResults('test4-results', results);
+        }
+
+        function testSameFolderToggle() {
+            const results = [];
+
+            try {
+                resetTestEnvironment();
+
+                // Test toggle behavior on empty folder
+                toggleFolder('folder1');
+                const folder1FirstClick = document.querySelector('[data-folder-id="folder1"]');
+                const folder1IconFirst = document.getElementById('folder-icon-folder1');
+
+                if (folder1FirstClick.classList.contains('expanded') && folder1IconFirst.textContent === '📂') {
+                    logTest('First Click Open', true, 'First click opens empty folder');
+                    results.push({
+                        passed: true,
+                        message: 'First click opens empty folder'
+                    });
+                } else {
+                    logTest('First Click Open', false, 'First click failed to open empty folder');
+                    results.push({
+                        passed: false,
+                        message: 'First click failed to open empty folder'
+                    });
+                }
+
+                // Click same folder again
+                toggleFolder('folder1');
+                const folder1SecondClick = document.querySelector('[data-folder-id="folder1"]');
+                const folder1IconSecond = document.getElementById('folder-icon-folder1');
+
+                if (!folder1SecondClick.classList.contains('expanded') && folder1IconSecond.textContent === '📁') {
+                    logTest('Second Click Close', true, 'Second click closes empty folder');
+                    results.push({
+                        passed: true,
+                        message: 'Second click closes empty folder'
+                    });
+                } else {
+                    logTest('Second Click Close', false, 'Second click failed to close empty folder');
+                    results.push({
+                        passed: false,
+                        message: 'Second click failed to close empty folder'
+                    });
+                }
+
+                // Test toggle behavior on folder with subfolders
+                toggleFolder('folder3');
+                const folder3FirstClick = document.querySelector('[data-folder-id="folder3"]');
+                const folder3IconFirst = document.getElementById('folder-icon-folder3');
+
+                if (folder3FirstClick.classList.contains('expanded') && folder3IconFirst.textContent === '📂') {
+                    logTest('Parent First Click', true, 'First click opens parent folder');
+                    results.push({
+                        passed: true,
+                        message: 'First click opens parent folder'
+                    });
+                } else {
+                    logTest('Parent First Click', false, 'First click failed to open parent folder');
+                    results.push({
+                        passed: false,
+                        message: 'First click failed to open parent folder'
+                    });
+                }
+
+                // Click same parent folder again
+                toggleFolder('folder3');
+                const folder3SecondClick = document.querySelector('[data-folder-id="folder3"]');
+                const folder3IconSecond = document.getElementById('folder-icon-folder3');
+
+                if (!folder3SecondClick.classList.contains('expanded') && folder3IconSecond.textContent === '📁') {
+                    logTest('Parent Second Click', true, 'Second click closes parent folder');
+                    results.push({
+                        passed: true,
+                        message: 'Second click closes parent folder'
+                    });
+                } else {
+                    logTest('Parent Second Click', false, 'Second click failed to close parent folder');
+                    results.push({
+                        passed: false,
+                        message: 'Second click failed to close parent folder'
+                    });
+                }
+
+            } catch (error) {
+                logTest('Same Folder Toggle', false, `Test failed with error: ${error.message}`);
+                results.push({
+                    passed: false,
+                    message: `Test failed with error: ${error.message}`
+                });
+            }
+
+            displayResults('test5-results', results);
+        }
+
+        function runAllTests() {
+            console.log('Running all folder behavior tests...');
+            testResults = []; // Clear previous results
+
+            setupTestData();
+
+            setTimeout(() => {
+                testEmptyFoldersAutoClose();
+            }, 100);
+
+            setTimeout(() => {
+                testFoldersWithSubfoldersStayOpen();
+            }, 200);
+
+            setTimeout(() => {
+                testVisualFeedback();
+            }, 300);
+
+            setTimeout(() => {
+                testEdgeCases();
+            }, 400);
+
+            setTimeout(() => {
+                testSameFolderToggle();
+            }, 500);
+
+            setTimeout(() => {
+                // Summary
+                const totalTests = testResults.length;
+                const passedTests = testResults.filter(r => r.passed).length;
+                const failedTests = totalTests - passedTests;
+
+                console.log(`\n=== TEST SUMMARY ===`);
+                console.log(`Total Tests: ${totalTests}`);
+                console.log(`Passed: ${passedTests}`);
+                console.log(`Failed: ${failedTests}`);
+                console.log(`Success Rate: ${((passedTests / totalTests) * 100).toFixed(1)}%`);
+
+                if (failedTests > 0) {
+                    console.log('\nFailed Tests:');
+                    testResults.filter(r => !r.passed).forEach(r => {
+                        console.log(`- ${r.test}: ${r.message}`);
+                    });
+                }
+            }, 600);
+        }
+
+        // Initialize test environment when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            setupTestData();
+        });
+    </script>
+</body>
+
+</html>

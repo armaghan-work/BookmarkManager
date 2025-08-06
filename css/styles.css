@@ -1,0 +1,837 @@
+/* Bookmark Manager Styles */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    font-size: 13px;
+    line-height: 1.4;
+    background: #fafafa;
+    color: #333;
+}
+
+.header {
+    background: white;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.search-box {
+    flex: 1;
+    padding: 8px 32px 8px 12px;
+    border: 1px solid #d0d0d0;
+    border-radius: 6px;
+    font-size: 13px;
+    transition: all 0.2s ease;
+    background: white;
+}
+
+.search-box:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    transform: translateY(-1px);
+}
+
+.search-box::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: 500;
+}
+
+.btn:hover {
+    background: #f9fafb;
+    border-color: #9ca3af;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.btn-icon {
+    font-size: 16px;
+    line-height: 1;
+}
+
+.btn-primary {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.btn-primary:hover {
+    background: #2563eb;
+}
+
+.main {
+    display: flex;
+    height: calc(100vh - 40px);
+    position: relative;
+}
+
+.sidebar {
+    width: 250px;
+    background: white;
+    border-right: 1px solid #e0e0e0;
+    overflow-y: auto;
+    flex-shrink: 0;
+}
+
+.resizer {
+    width: 5px;
+    cursor: col-resize;
+    background: #e0e0e0;
+    height: 100%;
+    position: absolute;
+    left: 250px;
+    top: 0;
+    z-index: 10;
+}
+
+.resizer:hover {
+    background: #3b82f6;
+}
+
+.content {
+    flex: 1;
+    background: white;
+    overflow-y: auto;
+    padding: 8px;
+}
+
+.folder {
+    margin: 2px 0;
+    background: white;
+}
+
+.folder-header {
+    padding: 6px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.folder-header:hover {
+    background: #f0f0f0;
+}
+
+.folder.selected>.folder-header {
+    background: #e8f0fe;
+    border-left: 5px solid #1a73e8;
+}
+
+.folder-title {
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    color: #202124;
+}
+
+.folder-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.folder:hover .folder-actions {
+    opacity: 1;
+}
+
+.folder-content {
+    margin-left: 15px;
+    /* Indentation for subfolders */
+    max-height: 0;
+    overflow: hidden;
+    /* transition: max-height 0.3s ease; - Removed for instant folder closing */
+}
+
+.folder.expanded>.folder-content {
+    max-height: 2000px;
+}
+
+.link-item {
+    padding: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.link-item:last-child {
+    border-bottom: none;
+}
+
+.link-item:hover {
+    background: #f8f8f8;
+}
+
+.link-url {
+    flex: 1;
+    color: #0066cc;
+    text-decoration: none;
+    font-size: 12px;
+}
+
+.link-url:hover {
+    text-decoration: underline;
+}
+
+.link-title {
+    font-weight: 500;
+    margin-right: 8px;
+    font-size: 12px;
+}
+
+.link-actions {
+    display: flex;
+    gap: 2px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.link-item:hover .link-actions {
+    opacity: 1;
+}
+
+/* Modern icon-based action buttons */
+.action-btn {
+    padding: 6px;
+    border: none;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    color: #666;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin: 0 2px;
+    position: relative;
+    border: 1px solid transparent;
+}
+
+.action-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    color: #333;
+    transform: translateY(-1px);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.1);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Edit button with modern icon styling */
+.action-btn.edit-btn {
+    color: #1976d2;
+}
+
+.action-btn.edit-btn:hover {
+    background: #e3f2fd;
+    color: #1565c0;
+    border-color: #bbdefb;
+}
+
+.action-btn.edit-btn::before {
+    content: "✏️";
+    font-size: 12px;
+}
+
+/* Delete button with modern icon styling */
+.action-btn.delete-btn {
+    color: #d32f2f;
+}
+
+.action-btn.delete-btn:hover {
+    background: #ffebee;
+    color: #c62828;
+    border-color: #ffcdd2;
+}
+
+.action-btn.delete-btn::before {
+    content: "🗑️";
+    font-size: 12px;
+}
+
+/* Add tooltip functionality */
+.action-btn[title] {
+    position: relative;
+}
+
+.action-btn[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    white-space: nowrap;
+    z-index: 1000;
+    margin-bottom: 4px;
+    pointer-events: none;
+}
+
+.action-btn[title]:hover::before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 4px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.8);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+.modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    min-width: 300px;
+    border: 1px solid #d0d0d0;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    font-weight: 500;
+    margin-bottom: 12px;
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 12px;
+}
+
+.form-label {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #4b5563;
+}
+
+.form-input,
+.form-select {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.form-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: flex-end;
+    margin-top: 16px;
+}
+
+.drag-over {
+    background: #e8f4f8 !important;
+    border: 2px dashed #4a90a4 !important;
+    border-radius: 4px;
+}
+
+.dragging {
+    opacity: 0.5;
+}
+
+.drag-handle {
+    cursor: grab;
+    color: #9ca3af;
+    margin-right: 4px;
+    font-size: 12px;
+    user-select: none;
+}
+
+.drag-handle:active {
+    cursor: grabbing;
+}
+
+.drag-ghost {
+    opacity: 0.4;
+}
+
+.collapsed-icon::before,
+.expanded-icon::before {
+    content: '';
+    display: none;
+}
+
+.empty-state {
+    padding: 20px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    background: #f9fafb;
+    border-radius: 6px;
+    margin: 8px 0;
+}
+
+.folder-header-big {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    margin-bottom: 16px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.folder-header-big h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111827;
+}
+
+.favicon {
+    width: 16px;
+    height: 16px;
+    margin-right: 4px;
+    flex-shrink: 0;
+}
+
+.folder-count {
+    font-size: 11px;
+    color: #5f6368;
+    margin-left: 4px;
+    font-weight: normal;
+}
+
+.folder-icon {
+    color: #5f6368;
+    font-size: 16px;
+    margin-right: 4px;
+    font-style: normal;
+}
+
+.folder-icon.open {
+    color: #1a73e8;
+}
+
+.search-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.search-clear {
+    position: absolute;
+    right: 8px;
+    background: none;
+    border: none;
+    color: #5f6368;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0;
+    display: none;
+}
+
+.search-clear.visible {
+    display: block;
+}
+
+.search-clear:hover {
+    color: #202124;
+}
+
+.btn-save {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+}
+
+.btn-save:hover {
+    background: #2563eb;
+}
+
+/* Notes window styles */
+.notes-window {
+    position: fixed;
+    top: 100px;
+    right: 50px;
+    width: 300px;
+    height: 400px;
+    background: #fefce8;
+    border: 1px solid #d1c44e;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 500;
+    display: none;
+    resize: both;
+    overflow: hidden;
+    min-width: 200px;
+    min-height: 150px;
+}
+
+.notes-header {
+    background: #f3f096;
+    border-bottom: 1px solid #d1c44e;
+    padding: 8px 12px;
+    cursor: move;
+    display: flex;
+    justify-content: between;
+    align-items: center;
+    font-weight: 500;
+    font-size: 14px;
+    color: #8b5a00;
+}
+
+.notes-title {
+    flex: 1;
+    user-select: none;
+}
+
+.notes-close {
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: #8b5a00;
+    padding: 0;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+}
+
+.notes-close:hover {
+    background: rgba(139, 90, 0, 0.1);
+}
+
+/* Notes toolbar styles */
+.notes-toolbar {
+    background: #f0e68c;
+    border-bottom: 1px solid #d1c44e;
+    padding: 6px 8px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.toolbar-btn {
+    background: rgba(255, 255, 255, 0.3);
+    border: 1px solid rgba(209, 196, 78, 0.4);
+    border-radius: 3px;
+    padding: 4px 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    color: #8b5a00;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 20px;
+    user-select: none;
+}
+
+.toolbar-btn:hover {
+    background: rgba(255, 255, 255, 0.6);
+    border-color: rgba(209, 196, 78, 0.6);
+    transform: translateY(-1px);
+}
+
+.toolbar-btn:active {
+    background: rgba(255, 255, 255, 0.8);
+    transform: translateY(0);
+}
+
+.toolbar-btn.active {
+    background: rgba(139, 90, 0, 0.2);
+    border-color: #8b5a00;
+    color: #6b4500;
+}
+
+.toolbar-separator {
+    width: 1px;
+    height: 16px;
+    background: rgba(209, 196, 78, 0.4);
+    margin: 0 2px;
+}
+
+.notes-content {
+    height: calc(100% - 67px);
+    padding: 12px;
+    overflow: hidden;
+}
+
+.notes-editor {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    resize: none;
+    outline: none;
+    font-family: inherit;
+    font-size: 13px;
+    line-height: 1.4;
+    color: #8b5a00;
+    overflow-y: auto;
+    word-wrap: break-word;
+}
+
+.notes-editor:empty::before {
+    content: attr(data-placeholder);
+    color: #a16207;
+    opacity: 0.7;
+    pointer-events: none;
+    white-space: pre-line;
+}
+
+/* Custom scrollbar for notes */
+.notes-editor::-webkit-scrollbar {
+    width: 8px;
+}
+
+.notes-editor::-webkit-scrollbar-track {
+    background: rgba(209, 196, 78, 0.1);
+    border-radius: 4px;
+}
+
+.notes-editor::-webkit-scrollbar-thumb {
+    background: rgba(209, 196, 78, 0.3);
+    border-radius: 4px;
+}
+
+.notes-editor::-webkit-scrollbar-thumb:hover {
+    background: rgba(209, 196, 78, 0.5);
+}
+
+/* List styling for notes editor */
+.notes-editor ul,
+.notes-editor ol {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.notes-editor ul li,
+.notes-editor ol li {
+    margin: 5px 0;
+    line-height: 1.4;
+}
+
+.notes-editor ul {
+    list-style-type: disc;
+}
+
+.notes-editor ol {
+    list-style-type: decimal;
+}
+
+/* Button styling for My Notes */
+.btn-notes {
+    background: #fef3c7;
+    color: #8b5a00;
+    border-color: #d1c44e;
+}
+
+.btn-notes:hover {
+    background: #fde68a;
+    border-color: #a16207;
+}
+
+/* Enhanced visual feedback and animations */
+.folder-header {
+    border-radius: 4px;
+    margin: 1px 2px;
+}
+
+.folder-header:hover {
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+
+.folder.selected>.folder-header {
+    background: #e8f0fe;
+    border-left: 4px solid #1a73e8;
+    border-radius: 0 4px 4px 0;
+}
+
+.link-item {
+    border-radius: 4px;
+    margin: 1px 0;
+    transition: all 0.15s ease;
+}
+
+.link-item:hover {
+    background: #f8f9fa;
+    transform: translateX(2px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Improved empty state styling */
+.empty-state {
+    padding: 30px 20px;
+    text-align: center;
+    color: #6b7280;
+    font-size: 14px;
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 8px;
+    margin: 16px 8px;
+    border: 2px dashed #d1d5db;
+}
+
+.empty-state::before {
+    content: "📂";
+    display: block;
+    font-size: 32px;
+    margin-bottom: 8px;
+    opacity: 0.5;
+}
+
+/* Loading states and micro-interactions */
+.btn:active {
+    transform: translateY(0) scale(0.98);
+}
+
+.search-box:focus {
+    outline: none;
+    border-color: #1a73e8;
+    box-shadow: 0 0 0 3px rgba(26, 115, 232, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Improved modal styling */
+.modal {
+    backdrop-filter: blur(2px);
+}
+
+.modal-content {
+    animation: modalSlideIn 0.2s ease-out;
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -60%);
+    }
+
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
+}
+
+/* Enhanced form styling */
+.form-input:focus,
+.form-select:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    transform: translateY(-1px);
+}
+
+/* Improved drag and drop visual feedback */
+.drag-over {
+    background: linear-gradient(135deg, #e8f4f8 0%, #d1ecf1 100%) !important;
+    border: 2px dashed #4a90a4 !important;
+    border-radius: 6px;
+    transform: scale(1.02);
+}
+
+.dragging {
+    opacity: 0.6;
+    transform: rotate(2deg);
+}
+
+/* Enhanced scrollbar styling */
+.sidebar::-webkit-scrollbar,
+.content::-webkit-scrollbar {
+    width: 8px;
+}
+
+.sidebar::-webkit-scrollbar-track,
+.content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb,
+.content::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 4px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover,
+.content::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+/* Responsive design improvements */
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        gap: 4px;
+    }
+
+    .btn {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .sidebar {
+        width: 200px;
+    }
+
+    .resizer {
+        left: 200px;
+    }
+}

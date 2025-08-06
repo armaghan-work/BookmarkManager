@@ -10,6 +10,55 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 
 $dataFile = 'bookmarks.json';
 
+function migrateNotesToRichText($notes) {
+    // Check if migration is needed (no formatVersion or version < 1.0)
+    if (!isset($notes['formatVersion']) || version_compare($notes['formatVersion'], '1.0', '<')) {
+        error_log('Migrating notes to rich text format...');
+        
+        // Convert plain text content to HTML
+        $htmlContent = '';
+        $plainContent = '';
+        
+        if (isset($notes['content']) && is_string($notes['content'])) {
+            $plainContent = $notes['content'];
+            // Convert plain text to HTML by wrapping in paragraphs and preserving line breaks
+            $lines = array_filter(array_map('trim', explode("\n", $notes['content'])), function($line) {
+                return strlen($line) > 0;
+            });
+            
+            if (!empty($lines)) {
+                $htmlContent = '<p>' . implode('</p><p>', array_map('htmlspecialchars', $lines)) . '</p>';
+            } else {
+                $htmlContent = '<p></p>';
+            }
+        } else {
+            $htmlContent = '<p></p>';
+            $plainContent = '';
+        }
+        
+        // Create new enhanced notes structure
+        $migratedNotes = [
+            'content' => $htmlContent,
+            'plainContent' => $plainContent,
+            'position' => isset($notes['position']) ? $notes['position'] : ['x' => 50, 'y' => 100],
+            'size' => isset($notes['size']) ? $notes['size'] : ['width' => 300, 'height' => 400],
+            'formatVersion' => '1.0'
+        ];
+        
+        error_log('Notes migration completed');
+        return $migratedNotes;
+    }
+    
+    // Already migrated, ensure all required properties exist
+    return [
+        'content' => isset($notes['content']) ? $notes['content'] : '<p></p>',
+        'plainContent' => isset($notes['plainContent']) ? $notes['plainContent'] : '',
+        'position' => isset($notes['position']) ? $notes['position'] : ['x' => 50, 'y' => 100],
+        'size' => isset($notes['size']) ? $notes['size'] : ['width' => 300, 'height' => 400],
+        'formatVersion' => isset($notes['formatVersion']) ? $notes['formatVersion'] : '1.0'
+    ];
+}
+
 function loadData() {
     global $dataFile;
     if (file_exists($dataFile)) {
@@ -31,10 +80,15 @@ function loadData() {
         
         if (!isset($data['notes'])) {
             $data['notes'] = [
-                'content' => '',
+                'content' => '<p></p>',
+                'plainContent' => '',
                 'position' => ['x' => 50, 'y' => 100],
-                'size' => ['width' => 300, 'height' => 400]
+                'size' => ['width' => 300, 'height' => 400],
+                'formatVersion' => '1.0'
             ];
+        } else {
+            // Migrate existing notes if needed
+            $data['notes'] = migrateNotesToRichText($data['notes']);
         }
         
         return $data;
@@ -44,9 +98,11 @@ function loadData() {
         'folders' => [],
         'links' => [],
         'notes' => [
-            'content' => '',
+            'content' => '<p></p>',
+            'plainContent' => '',
             'position' => ['x' => 50, 'y' => 100],
-            'size' => ['width' => 300, 'height' => 400]
+            'size' => ['width' => 300, 'height' => 400],
+            'formatVersion' => '1.0'
         ]
     ];
 }
@@ -65,10 +121,15 @@ function saveData($data) {
     
     if (!isset($data['notes'])) {
         $data['notes'] = [
-            'content' => '',
+            'content' => '<p></p>',
+            'plainContent' => '',
             'position' => ['x' => 50, 'y' => 100],
-            'size' => ['width' => 300, 'height' => 400]
+            'size' => ['width' => 300, 'height' => 400],
+            'formatVersion' => '1.0'
         ];
+    } else {
+        // Ensure notes are in the correct format when saving
+        $data['notes'] = migrateNotesToRichText($data['notes']);
     }
     
     $json = json_encode($data, JSON_PRETTY_PRINT);

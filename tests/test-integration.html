@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Test - Modular Structure</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .test-result {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .pass {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .fail {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        button {
+            background: #007cba;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        button:hover {
+            background: #005a87;
+        }
+
+        .module-status {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .module-card {
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .module-card.loaded {
+            background: #d4edda;
+        }
+
+        .module-card.error {
+            background: #f8d7da;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="test-container">
+        <h1>🔧 Integration Test - Modular Structure</h1>
+        <p>This test verifies that all modules load correctly and work together.</p>
+
+        <button onclick="runIntegrationTests()">🧪 Run Integration Tests</button>
+        <button onclick="testNotesManager()">📝 Test Notes Manager</button>
+        <button onclick="testDOMUtils()">🔧 Test DOM Utils</button>
+
+        <div id="results"></div>
+
+        <h3>Module Loading Status</h3>
+        <div class="module-status">
+            <div class="module-card" id="logger-status">
+                <h4>Logger</h4>
+                <div id="logger-result">Loading...</div>
+            </div>
+            <div class="module-card" id="dom-utils-status">
+                <h4>DOM Utils</h4>
+                <div id="dom-utils-result">Loading...</div>
+            </div>
+            <div class="module-card" id="notes-manager-status">
+                <h4>Notes Manager</h4>
+                <div id="notes-manager-result">Loading...</div>
+            </div>
+            <div class="module-card" id="content-sanitizer-status">
+                <h4>Content Sanitizer</h4>
+                <div id="content-sanitizer-result">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load modules in correct order -->
+    <script src="js/utils/logger.js"></script>
+    <script src="js/utils/dom-utils.js"></script>
+    <script src="js/content-sanitizer.js"></script>
+    <script src="js/components/NotesManager.js"></script>
+
+    <script>
+        // Test results container
+        const resultsContainer = document.getElementById('results');
+
+        // Test utilities
+        function addResult(message, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `test-result ${type}`;
+            div.textContent = message;
+            resultsContainer.appendChild(div);
+        }
+
+        function clearResults() {
+            resultsContainer.innerHTML = '';
+        }
+
+        // Check module loading status
+        function checkModuleStatus() {
+            // Check Logger
+            const loggerCard = document.getElementById('logger-status');
+            const loggerResult = document.getElementById('logger-result');
+            if (typeof logger !== 'undefined' || typeof window.logger !== 'undefined') {
+                loggerCard.className = 'module-card loaded';
+                loggerResult.textContent = '✅ Loaded';
+            } else {
+                loggerCard.className = 'module-card error';
+                loggerResult.textContent = '❌ Failed';
+            }
+
+            // Check DOM Utils
+            const domUtilsCard = document.getElementById('dom-utils-status');
+            const domUtilsResult = document.getElementById('dom-utils-result');
+            if (typeof DOMUtils !== 'undefined' || typeof window.DOMUtils !== 'undefined') {
+                domUtilsCard.className = 'module-card loaded';
+                domUtilsResult.textContent = '✅ Loaded';
+            } else {
+                domUtilsCard.className = 'module-card error';
+                domUtilsResult.textContent = '❌ Failed';
+            }
+
+            // Check Notes Manager
+            const notesManagerCard = document.getElementById('notes-manager-status');
+            const notesManagerResult = document.getElementById('notes-manager-result');
+            if (typeof NotesManager !== 'undefined' || typeof window.NotesManager !== 'undefined') {
+                notesManagerCard.className = 'module-card loaded';
+                notesManagerResult.textContent = '✅ Loaded';
+            } else {
+                notesManagerCard.className = 'module-card error';
+                notesManagerResult.textContent = '❌ Failed';
+            }
+
+            // Check Content Sanitizer
+            const sanitizerCard = document.getElementById('content-sanitizer-status');
+            const sanitizerResult = document.getElementById('content-sanitizer-result');
+            if (typeof ContentSanitizer !== 'undefined' || typeof window.ContentSanitizer !== 'undefined') {
+                sanitizerCard.className = 'module-card loaded';
+                sanitizerResult.textContent = '✅ Loaded';
+            } else {
+                sanitizerCard.className = 'module-card error';
+                sanitizerResult.textContent = '❌ Failed';
+            }
+        }
+
+        // Run comprehensive integration tests
+        function runIntegrationTests() {
+            clearResults();
+            addResult('🧪 Starting Integration Tests...', 'info');
+
+            let passCount = 0;
+            let totalTests = 0;
+
+            // Test 1: Module Loading
+            totalTests++;
+            try {
+                const hasLogger = typeof logger !== 'undefined' || typeof window.logger !== 'undefined';
+                const hasDOMUtils = typeof DOMUtils !== 'undefined' || typeof window.DOMUtils !== 'undefined';
+                const hasNotesManager = typeof NotesManager !== 'undefined' || typeof window.NotesManager !== 'undefined';
+                const hasSanitizer = typeof ContentSanitizer !== 'undefined' || typeof window.ContentSanitizer !== 'undefined';
+
+                if (hasLogger && hasDOMUtils && hasNotesManager && hasSanitizer) {
+                    addResult('✅ All modules loaded successfully', 'pass');
+                    passCount++;
+                } else {
+                    addResult(`❌ Module loading failed - Logger: ${hasLogger}, DOMUtils: ${hasDOMUtils}, NotesManager: ${hasNotesManager}, Sanitizer: ${hasSanitizer}`, 'fail');
+                }
+            } catch (error) {
+                addResult(`❌ Module loading test failed: ${error.message}`, 'fail');
+            }
+
+            // Test 2: Logger Functionality
+            totalTests++;
+            try {
+                const loggerInstance = window.logger || logger;
+                if (loggerInstance && typeof loggerInstance.info === 'function') {
+                    loggerInstance.info('Integration test log message');
+                    addResult('✅ Logger functionality working', 'pass');
+                    passCount++;
+                } else {
+                    addResult('❌ Logger functionality failed', 'fail');
+                }
+            } catch (error) {
+                addResult(`❌ Logger test failed: ${error.message}`, 'fail');
+            }
+
+            // Test 3: DOM Utils Functionality
+            totalTests++;
+            try {
+                const domUtils = window.DOMUtils || DOMUtils;
+                if (domUtils && typeof domUtils.createElement === 'function') {
+                    const testElement = domUtils.createElement('div', {
+                        className: 'test'
+                    }, 'Test content');
+                    if (testElement && testElement.className === 'test' && testElement.textContent === 'Test content') {
+                        addResult('✅ DOM Utils functionality working', 'pass');
+                        passCount++;
+                    } else {
+                        addResult('❌ DOM Utils createElement failed', 'fail');
+                    }
+                } else {
+                    addResult('❌ DOM Utils not available', 'fail');
+                }
+            } catch (error) {
+                addResult(`❌ DOM Utils test failed: ${error.message}`, 'fail');
+            }
+
+            // Test 4: Content Sanitizer Functionality
+            totalTests++;
+            try {
+                const sanitizer = window.ContentSanitizer || ContentSanitizer;
+                if (sanitizer && typeof sanitizer.sanitizeContent === 'function') {
+                    const testInput = '<p>Safe content</p><script>alert("xss")
+    </script>';
+    const sanitized = sanitizer.sanitizeContent(testInput);
+    if (sanitized && !sanitized.includes('<script>
+        ')) {
+        addResult('✅ Content Sanitizer functionality working', 'pass');
+        passCount++;
+        }
+        else {
+            addResult('❌ Content Sanitizer failed to remove dangerous content', 'fail');
+        }
+        } else {
+            addResult('❌ Content Sanitizer not available', 'fail');
+        }
+        } catch (error) {
+            addResult(`❌ Content Sanitizer test failed: ${error.message}`, 'fail');
+        }
+
+        // Test 5: Notes Manager Instantiation
+        totalTests++;
+        try {
+            const NotesManagerClass = window.NotesManager || NotesManager;
+            if (NotesManagerClass && typeof NotesManagerClass === 'function') {
+                const notesManager = new NotesManagerClass();
+                if (notesManager && typeof notesManager.initialize === 'function') {
+                    addResult('✅ Notes Manager instantiation working', 'pass');
+                    passCount++;
+                } else {
+                    addResult('❌ Notes Manager instantiation failed', 'fail');
+                }
+            } else {
+                addResult('❌ Notes Manager class not available', 'fail');
+            }
+        } catch (error) {
+            addResult(`❌ Notes Manager test failed: ${error.message}`, 'fail');
+        }
+
+        // Summary
+        const successRate = ((passCount / totalTests) * 100).toFixed(1);
+        addResult(`📊 Integration Test Summary: ${passCount}/${totalTests} tests passed (${successRate}%)`,
+            passCount === totalTests ? 'pass' : 'fail');
+
+        if (passCount === totalTests) {
+            addResult('🎉 All integration tests passed! Modular structure is working correctly.', 'pass');
+        } else {
+            addResult('⚠️ Some integration tests failed. Check the individual test results above.', 'fail');
+        }
+        }
+
+        // Test Notes Manager specifically
+        function testNotesManager() {
+            clearResults();
+            addResult('📝 Testing Notes Manager...', 'info');
+
+            try {
+                const NotesManagerClass = window.NotesManager || NotesManager;
+                const notesManager = new NotesManagerClass();
+
+                // Test methods exist
+                const methods = ['initialize', 'show', 'hide', 'toggle', 'setupFormattingCommands'];
+                let methodsExist = true;
+
+                methods.forEach(method => {
+                    if (typeof notesManager[method] !== 'function') {
+                        addResult(`❌ Method ${method} not found`, 'fail');
+                        methodsExist = false;
+                    }
+                });
+
+                if (methodsExist) {
+                    addResult('✅ All Notes Manager methods exist', 'pass');
+                }
+
+                // Test utility methods
+                if (typeof notesManager.escapeHtml === 'function') {
+                    const escaped = notesManager.escapeHtml('<script>alert("test")
+    </script>');
+    if (escaped.includes('&lt;') && escaped.includes('&gt;')) {
+    addResult('✅ HTML escaping works correctly', 'pass');
+    } else {
+    addResult('❌ HTML escaping failed', 'fail');
+    }
+    }
+
+    } catch (error) {
+    addResult(`❌ Notes Manager test failed: ${error.message}`, 'fail');
+    }
+    }
+
+    // Test DOM Utils specifically
+    function testDOMUtils() {
+    clearResults();
+    addResult('🔧 Testing DOM Utils...', 'info');
+
+    try {
+    const domUtils = window.DOMUtils || DOMUtils;
+
+    // Test createElement
+    const element = domUtils.createElement('div',
+    { className: 'test-class', id: 'test-id' },
+    'Test content'
+    );
+
+    if (element.className === 'test-class' &&
+    element.id === 'test-id' &&
+    element.textContent === 'Test content') {
+    addResult('✅ createElement works correctly', 'pass');
+    } else {
+    addResult('❌ createElement failed', 'fail');
+    }
+
+    // Test escapeHtml
+    const escaped = domUtils.escapeHtml('<script>
+        alert("xss")
+    </script>');
+    if (escaped.includes('&lt;') && escaped.includes('&gt;')) {
+    addResult('✅ HTML escaping works correctly', 'pass');
+    } else {
+    addResult('❌ HTML escaping failed', 'fail');
+    }
+
+    // Test stripHtml
+    const stripped = domUtils.stripHtml('<p>Hello <strong>world</strong></p>');
+    if (stripped === 'Hello world') {
+    addResult('✅ HTML stripping works correctly', 'pass');
+    } else {
+    addResult('❌ HTML stripping failed', 'fail');
+    }
+
+    } catch (error) {
+    addResult(`❌ DOM Utils test failed: ${error.message}`, 'fail');
+    }
+    }
+
+    // Check module status on page load
+    document.addEventListener('DOMContentLoaded', function() {
+    setTimeout(checkModuleStatus, 100);
+    });
+    </script>
+</body>
+
+</html>

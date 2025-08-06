@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unicode Test</title>
+</head>
+
+<body>
+    <h1>Unicode Character Test</h1>
+
+    <h2>Expected Characters:</h2>
+    <p>Drag handle: ≡</p>
+    <p>Folder closed: 📁</p>
+    <p>Folder open: 📂</p>
+    <p>Down arrow: ▼</p>
+    <p>Right arrow: ▶</p>
+
+    <h2>From JavaScript file:</h2>
+    <div id="test"></div>
+
+    <script src="js/main.js"></script>
+    <script>
+        // Test if the characters are correctly loaded
+        document.getElementById('test').innerHTML = `
+            <p>Testing characters from main.js...</p>
+            <p>If you see proper icons above but corrupted characters in the main app, 
+               the issue is in the JavaScript file encoding.</p>
+        `;
+    </script>
+</body>
+
+</html>

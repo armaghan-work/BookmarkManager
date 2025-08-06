@@ -1,0 +1,837 @@
+{
+    "folders": [{
+            "id": "tech-news",
+            "name": "Tech News & Blogs",
+            "parentId": null,
+            "order": 1
+        },
+        {
+            "id": "development",
+            "name": "Development",
+            "parentId": null,
+            "order": 2
+        },
+        {
+            "id": "frontend",
+            "name": "Frontend",
+            "parentId": "development",
+            "order": 1
+        },
+        {
+            "id": "backend",
+            "name": "Backend",
+            "parentId": "development",
+            "order": 2
+        },
+        {
+            "id": "devtools",
+            "name": "Dev Tools",
+            "parentId": "development",
+            "order": 3
+        },
+        {
+            "id": "design",
+            "name": "Design & UI/UX",
+            "parentId": null,
+            "order": 3
+        },
+        {
+            "id": "learning",
+            "name": "Learning & Tutorials",
+            "parentId": null,
+            "order": 4
+        },
+        {
+            "id": "productivity",
+            "name": "Productivity",
+            "parentId": null,
+            "order": 5
+        },
+        {
+            "id": "social-media",
+            "name": "Social Media",
+            "parentId": null,
+            "order": 6
+        },
+        {
+            "id": "entertainment",
+            "name": "Entertainment",
+            "parentId": null,
+            "order": 7
+        },
+        {
+            "id": "streaming",
+            "name": "Streaming",
+            "parentId": "entertainment",
+            "order": 1
+        },
+        {
+            "id": "gaming",
+            "name": "Gaming",
+            "parentId": "entertainment",
+            "order": 2
+        },
+        {
+            "id": "shopping",
+            "name": "Shopping",
+            "parentId": null,
+            "order": 8
+        },
+        {
+            "id": "finance",
+            "name": "Finance & Crypto",
+            "parentId": null,
+            "order": 9
+        },
+        {
+            "id": "news",
+            "name": "News & Media",
+            "parentId": null,
+            "order": 10
+        },
+        {
+            "id": "health",
+            "name": "Health & Fitness",
+            "parentId": null,
+            "order": 11
+        },
+        {
+            "id": "travel",
+            "name": "Travel",
+            "parentId": null,
+            "order": 12
+        },
+        {
+            "id": "food",
+            "name": "Food & Recipes",
+            "parentId": null,
+            "order": 13
+        },
+        {
+            "id": "science",
+            "name": "Science & Research",
+            "parentId": null,
+            "order": 14
+        },
+        {
+            "id": "utilities",
+            "name": "Utilities & Tools",
+            "parentId": null,
+            "order": 15
+        }
+    ],
+    "links": [{
+            "id": "link1",
+            "title": "TechCrunch - Latest Technology News",
+            "url": "https://techcrunch.com",
+            "folderId": "tech-news",
+            "order": 1
+        },
+        {
+            "id": "link2",
+            "title": "The Verge - Technology, Science, Art, Culture",
+            "url": "https://theverge.com",
+            "folderId": "tech-news",
+            "order": 2
+        },
+        {
+            "id": "link3",
+            "title": "Ars Technica - Technology Lab",
+            "url": "https://arstechnica.com",
+            "folderId": "tech-news",
+            "order": 3
+        },
+        {
+            "id": "link4",
+            "title": "Wired - Ideas, Innovation, Technology",
+            "url": "https://wired.com",
+            "folderId": "tech-news",
+            "order": 4
+        },
+        {
+            "id": "link5",
+            "title": "Hacker News - Social News Website",
+            "url": "https://news.ycombinator.com",
+            "folderId": "tech-news",
+            "order": 5
+        },
+        {
+            "id": "link6",
+            "title": "Engadget - Technology News & Reviews",
+            "url": "https://engadget.com",
+            "folderId": "tech-news",
+            "order": 6
+        },
+        {
+            "id": "link7",
+            "title": "Mashable - Digital Culture & Tech",
+            "url": "https://mashable.com",
+            "folderId": "tech-news",
+            "order": 7
+        },
+        {
+            "id": "link8",
+            "title": "TechRadar - Technology Reviews & News",
+            "url": "https://techradar.com",
+            "folderId": "tech-news",
+            "order": 8
+        },
+        {
+            "id": "link9",
+            "title": "9to5Mac - Apple News & Rumors",
+            "url": "https://9to5mac.com",
+            "folderId": "tech-news",
+            "order": 9
+        },
+        {
+            "id": "link10",
+            "title": "Android Police - Android News",
+            "url": "https://androidpolice.com",
+            "folderId": "tech-news",
+            "order": 10
+        },
+        {
+            "id": "link11",
+            "title": "VentureBeat - Tech Business News",
+            "url": "https://venturebeat.com",
+            "folderId": "tech-news",
+            "order": 11
+        },
+        {
+            "id": "link12",
+            "title": "ZDNet - Technology News & Reviews",
+            "url": "https://zdnet.com",
+            "folderId": "tech-news",
+            "order": 12
+        },
+        {
+            "id": "link13",
+            "title": "Gizmodo - Design, Technology & Science",
+            "url": "https://gizmodo.com",
+            "folderId": "tech-news",
+            "order": 13
+        },
+        {
+            "id": "link14",
+            "title": "TechCrunch Startups - Startup News",
+            "url": "https://techcrunch.com/startups",
+            "folderId": "tech-news",
+            "order": 14
+        },
+        {
+            "id": "link15",
+            "title": "MIT Technology Review",
+            "url": "https://technologyreview.com",
+            "folderId": "tech-news",
+            "order": 15
+        },
+        {
+            "id": "link16",
+            "title": "React - JavaScript Library",
+            "url": "https://reactjs.org",
+            "folderId": "frontend",
+            "order": 1
+        },
+        {
+            "id": "link17",
+            "title": "Vue.js - Progressive Framework",
+            "url": "https://vuejs.org",
+            "folderId": "frontend",
+            "order": 2
+        },
+        {
+            "id": "link18",
+            "title": "Angular - Platform for Mobile & Desktop",
+            "url": "https://angular.io",
+            "folderId": "frontend",
+            "order": 3
+        },
+        {
+            "id": "link19",
+            "title": "Svelte - Cybernetically Enhanced Web Apps",
+            "url": "https://svelte.dev",
+            "folderId": "frontend",
+            "order": 4
+        },
+        {
+            "id": "link20",
+            "title": "Next.js - React Framework",
+            "url": "https://nextjs.org",
+            "folderId": "frontend",
+            "order": 5
+        },
+        {
+            "id": "link21",
+            "title": "Tailwind CSS - Utility-First CSS",
+            "url": "https://tailwindcss.com",
+            "folderId": "frontend",
+            "order": 6
+        },
+        {
+            "id": "link22",
+            "title": "Bootstrap - CSS Framework",
+            "url": "https://getbootstrap.com",
+            "folderId": "frontend",
+            "order": 7
+        },
+        {
+            "id": "link23",
+            "title": "Sass - CSS Extension Language",
+            "url": "https://sass-lang.com",
+            "folderId": "frontend",
+            "order": 8
+        },
+        {
+            "id": "link24",
+            "title": "TypeScript - JavaScript with Types",
+            "url": "https://typescriptlang.org",
+            "folderId": "frontend",
+            "order": 9
+        },
+        {
+            "id": "link25",
+            "title": "Webpack - Module Bundler",
+            "url": "https://webpack.js.org",
+            "folderId": "frontend",
+            "order": 10
+        },
+        {
+            "id": "link26",
+            "title": "Node.js - JavaScript Runtime",
+            "url": "https://nodejs.org",
+            "folderId": "backend",
+            "order": 1
+        },
+        {
+            "id": "link27",
+            "title": "Express.js - Web Framework",
+            "url": "https://expressjs.com",
+            "folderId": "backend",
+            "order": 2
+        },
+        {
+            "id": "link28",
+            "title": "Django - Python Web Framework",
+            "url": "https://djangoproject.com",
+            "folderId": "backend",
+            "order": 3
+        },
+        {
+            "id": "link29",
+            "title": "Flask - Python Microframework",
+            "url": "https://flask.palletsprojects.com",
+            "folderId": "backend",
+            "order": 4
+        },
+        {
+            "id": "link30",
+            "title": "Ruby on Rails - Web Framework",
+            "url": "https://rubyonrails.org",
+            "folderId": "backend",
+            "order": 5
+        },
+        {
+            "id": "link31",
+            "title": "Spring Boot - Java Framework",
+            "url": "https://spring.io/projects/spring-boot",
+            "folderId": "backend",
+            "order": 6
+        },
+        {
+            "id": "link32",
+            "title": "Laravel - PHP Framework",
+            "url": "https://laravel.com",
+            "folderId": "backend",
+            "order": 7
+        },
+        {
+            "id": "link33",
+            "title": "ASP.NET Core - .NET Framework",
+            "url": "https://dotnet.microsoft.com/apps/aspnet",
+            "folderId": "backend",
+            "order": 8
+        },
+        {
+            "id": "link34",
+            "title": "GitHub - Code Hosting Platform",
+            "url": "https://github.com",
+            "folderId": "devtools",
+            "order": 1
+        },
+        {
+            "id": "link35",
+            "title": "GitLab - DevOps Platform",
+            "url": "https://gitlab.com",
+            "folderId": "devtools",
+            "order": 2
+        },
+        {
+            "id": "link36",
+            "title": "Visual Studio Code - Code Editor",
+            "url": "https://code.visualstudio.com",
+            "folderId": "devtools",
+            "order": 3
+        },
+        {
+            "id": "link37",
+            "title": "Docker - Containerization Platform",
+            "url": "https://docker.com",
+            "folderId": "devtools",
+            "order": 4
+        },
+        {
+            "id": "link38",
+            "title": "Postman - API Development",
+            "url": "https://postman.com",
+            "folderId": "devtools",
+            "order": 5
+        },
+        {
+            "id": "link39",
+            "title": "Figma - Design Tool",
+            "url": "https://figma.com",
+            "folderId": "design",
+            "order": 1
+        },
+        {
+            "id": "link40",
+            "title": "Adobe XD - UX/UI Design",
+            "url": "https://adobe.com/products/xd.html",
+            "folderId": "design",
+            "order": 2
+        },
+        {
+            "id": "link41",
+            "title": "Sketch - Digital Design",
+            "url": "https://sketch.com",
+            "folderId": "design",
+            "order": 3
+        },
+        {
+            "id": "link42",
+            "title": "Dribbble - Design Community",
+            "url": "https://dribbble.com",
+            "folderId": "design",
+            "order": 4
+        },
+        {
+            "id": "link43",
+            "title": "Behance - Creative Portfolios",
+            "url": "https://behance.net",
+            "folderId": "design",
+            "order": 5
+        },
+        {
+            "id": "link44",
+            "title": "Canva - Graphic Design",
+            "url": "https://canva.com",
+            "folderId": "design",
+            "order": 6
+        },
+        {
+            "id": "link45",
+            "title": "freeCodeCamp - Learn to Code",
+            "url": "https://freecodecamp.org",
+            "folderId": "learning",
+            "order": 1
+        },
+        {
+            "id": "link46",
+            "title": "Codecademy - Interactive Learning",
+            "url": "https://codecademy.com",
+            "folderId": "learning",
+            "order": 2
+        },
+        {
+            "id": "link47",
+            "title": "Coursera - Online Courses",
+            "url": "https://coursera.org",
+            "folderId": "learning",
+            "order": 3
+        },
+        {
+            "id": "link48",
+            "title": "edX - University Courses",
+            "url": "https://edx.org",
+            "folderId": "learning",
+            "order": 4
+        },
+        {
+            "id": "link49",
+            "title": "Khan Academy - Free Learning",
+            "url": "https://khanacademy.org",
+            "folderId": "learning",
+            "order": 5
+        },
+        {
+            "id": "link50",
+            "title": "Udemy - Online Learning",
+            "url": "https://udemy.com",
+            "folderId": "learning",
+            "order": 6
+        },
+        {
+            "id": "link51",
+            "title": "Stack Overflow - Developer Q&A",
+            "url": "https://stackoverflow.com",
+            "folderId": "learning",
+            "order": 7
+        },
+        {
+            "id": "link52",
+            "title": "MDN Web Docs - Web Standards",
+            "url": "https://developer.mozilla.org",
+            "folderId": "learning",
+            "order": 8
+        },
+        {
+            "id": "link53",
+            "title": "Notion - All-in-One Workspace",
+            "url": "https://notion.so",
+            "folderId": "productivity",
+            "order": 1
+        },
+        {
+            "id": "link54",
+            "title": "Trello - Project Management",
+            "url": "https://trello.com",
+            "folderId": "productivity",
+            "order": 2
+        },
+        {
+            "id": "link55",
+            "title": "Slack - Team Communication",
+            "url": "https://slack.com",
+            "folderId": "productivity",
+            "order": 3
+        },
+        {
+            "id": "link56",
+            "title": "Asana - Work Management",
+            "url": "https://asana.com",
+            "folderId": "productivity",
+            "order": 4
+        },
+        {
+            "id": "link57",
+            "title": "Google Workspace - Productivity Suite",
+            "url": "https://workspace.google.com",
+            "folderId": "productivity",
+            "order": 5
+        },
+        {
+            "id": "link58",
+            "title": "Twitter - Social Network",
+            "url": "https://twitter.com",
+            "folderId": "social-media",
+            "order": 1
+        },
+        {
+            "id": "link59",
+            "title": "LinkedIn - Professional Network",
+            "url": "https://linkedin.com",
+            "folderId": "social-media",
+            "order": 2
+        },
+        {
+            "id": "link60",
+            "title": "Instagram - Photo Sharing",
+            "url": "https://instagram.com",
+            "folderId": "social-media",
+            "order": 3
+        },
+        {
+            "id": "link61",
+            "title": "Facebook - Social Network",
+            "url": "https://facebook.com",
+            "folderId": "social-media",
+            "order": 4
+        },
+        {
+            "id": "link62",
+            "title": "Reddit - Social News",
+            "url": "https://reddit.com",
+            "folderId": "social-media",
+            "order": 5
+        },
+        {
+            "id": "link63",
+            "title": "Netflix - Streaming Service",
+            "url": "https://netflix.com",
+            "folderId": "streaming",
+            "order": 1
+        },
+        {
+            "id": "link64",
+            "title": "YouTube - Video Platform",
+            "url": "https://youtube.com",
+            "folderId": "streaming",
+            "order": 2
+        },
+        {
+            "id": "link65",
+            "title": "Spotify - Music Streaming",
+            "url": "https://spotify.com",
+            "folderId": "streaming",
+            "order": 3
+        },
+        {
+            "id": "link66",
+            "title": "Twitch - Live Streaming",
+            "url": "https://twitch.tv",
+            "folderId": "streaming",
+            "order": 4
+        },
+        {
+            "id": "link67",
+            "title": "Disney+ - Streaming Service",
+            "url": "https://disneyplus.com",
+            "folderId": "streaming",
+            "order": 5
+        },
+        {
+            "id": "link68",
+            "title": "Steam - Gaming Platform",
+            "url": "https://store.steampowered.com",
+            "folderId": "gaming",
+            "order": 1
+        },
+        {
+            "id": "link69",
+            "title": "Epic Games Store - Game Store",
+            "url": "https://epicgames.com/store",
+            "folderId": "gaming",
+            "order": 2
+        },
+        {
+            "id": "link70",
+            "title": "IGN - Gaming News",
+            "url": "https://ign.com",
+            "folderId": "gaming",
+            "order": 3
+        },
+        {
+            "id": "link71",
+            "title": "GameSpot - Gaming Reviews",
+            "url": "https://gamespot.com",
+            "folderId": "gaming",
+            "order": 4
+        },
+        {
+            "id": "link72",
+            "title": "Amazon - Online Shopping",
+            "url": "https://amazon.com",
+            "folderId": "shopping",
+            "order": 1
+        },
+        {
+            "id": "link73",
+            "title": "eBay - Online Marketplace",
+            "url": "https://ebay.com",
+            "folderId": "shopping",
+            "order": 2
+        },
+        {
+            "id": "link74",
+            "title": "Etsy - Handmade & Vintage",
+            "url": "https://etsy.com",
+            "folderId": "shopping",
+            "order": 3
+        },
+        {
+            "id": "link75",
+            "title": "Best Buy - Electronics",
+            "url": "https://bestbuy.com",
+            "folderId": "shopping",
+            "order": 4
+        },
+        {
+            "id": "link76",
+            "title": "CoinMarketCap - Crypto Prices",
+            "url": "https://coinmarketcap.com",
+            "folderId": "finance",
+            "order": 1
+        },
+        {
+            "id": "link77",
+            "title": "Yahoo Finance - Financial News",
+            "url": "https://finance.yahoo.com",
+            "folderId": "finance",
+            "order": 2
+        },
+        {
+            "id": "link78",
+            "title": "Coinbase - Crypto Exchange",
+            "url": "https://coinbase.com",
+            "folderId": "finance",
+            "order": 3
+        },
+        {
+            "id": "link79",
+            "title": "Binance - Crypto Trading",
+            "url": "https://binance.com",
+            "folderId": "finance",
+            "order": 4
+        },
+        {
+            "id": "link80",
+            "title": "CNN - News Network",
+            "url": "https://cnn.com",
+            "folderId": "news",
+            "order": 1
+        },
+        {
+            "id": "link81",
+            "title": "BBC News - British Broadcasting",
+            "url": "https://bbc.com/news",
+            "folderId": "news",
+            "order": 2
+        },
+        {
+            "id": "link82",
+            "title": "Reuters - News Agency",
+            "url": "https://reuters.com",
+            "folderId": "news",
+            "order": 3
+        },
+        {
+            "id": "link83",
+            "title": "The Guardian - News & Media",
+            "url": "https://theguardian.com",
+            "folderId": "news",
+            "order": 4
+        },
+        {
+            "id": "link84",
+            "title": "WebMD - Health Information",
+            "url": "https://webmd.com",
+            "folderId": "health",
+            "order": 1
+        },
+        {
+            "id": "link85",
+            "title": "Mayo Clinic - Medical Information",
+            "url": "https://mayoclinic.org",
+            "folderId": "health",
+            "order": 2
+        },
+        {
+            "id": "link86",
+            "title": "MyFitnessPal - Fitness Tracking",
+            "url": "https://myfitnesspal.com",
+            "folderId": "health",
+            "order": 3
+        },
+        {
+            "id": "link87",
+            "title": "Booking.com - Hotel Booking",
+            "url": "https://booking.com",
+            "folderId": "travel",
+            "order": 1
+        },
+        {
+            "id": "link88",
+            "title": "Airbnb - Vacation Rentals",
+            "url": "https://airbnb.com",
+            "folderId": "travel",
+            "order": 2
+        },
+        {
+            "id": "link89",
+            "title": "Expedia - Travel Booking",
+            "url": "https://expedia.com",
+            "folderId": "travel",
+            "order": 3
+        },
+        {
+            "id": "link90",
+            "title": "AllRecipes - Recipe Collection",
+            "url": "https://allrecipes.com",
+            "folderId": "food",
+            "order": 1
+        },
+        {
+            "id": "link91",
+            "title": "Food Network - Cooking Shows",
+            "url": "https://foodnetwork.com",
+            "folderId": "food",
+            "order": 2
+        },
+        {
+            "id": "link92",
+            "title": "Tasty - Recipe Videos",
+            "url": "https://tasty.co",
+            "folderId": "food",
+            "order": 3
+        },
+        {
+            "id": "link93",
+            "title": "NASA - Space Agency",
+            "url": "https://nasa.gov",
+            "folderId": "science",
+            "order": 1
+        },
+        {
+            "id": "link94",
+            "title": "Nature - Science Journal",
+            "url": "https://nature.com",
+            "folderId": "science",
+            "order": 2
+        },
+        {
+            "id": "link95",
+            "title": "Scientific American - Science Magazine",
+            "url": "https://scientificamerican.com",
+            "folderId": "science",
+            "order": 3
+        },
+        {
+            "id": "link96",
+            "title": "Google - Search Engine",
+            "url": "https://google.com",
+            "folderId": "utilities",
+            "order": 1
+        },
+        {
+            "id": "link97",
+            "title": "Wikipedia - Free Encyclopedia",
+            "url": "https://wikipedia.org",
+            "folderId": "utilities",
+            "order": 2
+        },
+        {
+            "id": "link98",
+            "title": "Translate - Google Translate",
+            "url": "https://translate.google.com",
+            "folderId": "utilities",
+            "order": 3
+        },
+        {
+            "id": "link99",
+            "title": "Dropbox - Cloud Storage",
+            "url": "https://dropbox.com",
+            "folderId": "utilities",
+            "order": 4
+        },
+        {
+            "id": "link100",
+            "title": "Gmail - Email Service",
+            "url": "https://gmail.com",
+            "folderId": "utilities",
+            "order": 5
+        }
+    ],
+    "notes": {
+        "content": "<p><strong>📝 Welcome to My Bookmark Manager!</strong></p><p><br></p><p>This is a <em>rich text notes</em> area where you can:</p><p><br></p><ul><li><strong>Format text</strong> with bold and italic</li><li>Create <em>bulleted lists</em> like this one</li><li>Add <strong>numbered lists</strong> for step-by-step instructions</li><li>Organize your thoughts and ideas</li></ul><p><br></p><p><strong>🚀 Quick Tips:</strong></p><ol><li>Use <strong>Ctrl+B</strong> for bold text</li><li>Use <strong>Ctrl+I</strong> for italic text</li><li>Click the <em>bullet</em> button for lists</li><li>Use the <strong>clear format</strong> button to remove styling</li></ol><p><br></p><p><em>💡 Pro Tip:</em> This notes window is <strong>resizable</strong> and <strong>draggable</strong>! You can move it around and resize it to fit your workflow.</p><p><br></p><p><strong>🎯 Project Ideas:</strong></p><ul><li>Build a React dashboard</li><li>Learn TypeScript fundamentals</li><li>Create a mobile app with React Native</li><li>Explore machine learning with Python</li><li>Design a modern UI/UX portfolio</li></ul><p><br></p><p><strong>📚 Learning Goals for 2025:</strong></p><ol><li>Master modern JavaScript frameworks</li><li>Improve CSS Grid and Flexbox skills</li><li>Learn backend development with Node.js</li><li>Understand database design principles</li><li>Build full-stack applications</li></ol><p><br></p><p><em>Remember: Your notes auto-save every second, so you never lose your thoughts! 💾</em></p>",
+        "plainContent": "📝 Welcome to My Bookmark Manager!\n\nThis is a rich text notes area where you can:\n\n• Format text with bold and italic\n• Create bulleted lists like this one\n• Add numbered lists for step-by-step instructions\n• Organize your thoughts and ideas\n\n🚀 Quick Tips:\n1. Use Ctrl+B for bold text\n2. Use Ctrl+I for italic text\n3. Click the bullet button for lists\n4. Use the clear format button to remove styling\n\n💡 Pro Tip: This notes window is resizable and draggable! You can move it around and resize it to fit your workflow.\n\n🎯 Project Ideas:\n• Build a React dashboard\n• Learn TypeScript fundamentals\n• Create a mobile app with React Native\n• Explore machine learning with Python\n• Design a modern UI/UX portfolio\n\n📚 Learning Goals for 2025:\n1. Master modern JavaScript frameworks\n2. Improve CSS Grid and Flexbox skills\n3. Learn backend development with Node.js\n4. Understand database design principles\n5. Build full-stack applications\n\nRemember: Your notes auto-save every second, so you never lose your thoughts! 💾",
+        "position": {
+            "x": 100,
+            "y": 150
+        },
+        "size": {
+            "width": 400,
+            "height": 500
+        },
+        "formatVersion": "1.0"
+    }
+}
