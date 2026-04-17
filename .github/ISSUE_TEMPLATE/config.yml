@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Security policy
+    url: https://github.com/armaghan-work/BookmarkManager/security/policy
+    about: Please review the security policy before reporting vulnerabilities.
+  - name: Project README
+    url: https://github.com/armaghan-work/BookmarkManager#readme
+    about: Start with the README for setup, usage, and project background.

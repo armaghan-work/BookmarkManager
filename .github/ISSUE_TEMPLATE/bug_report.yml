@@ -1,0 +1,74 @@
+name: Bug report
+description: Report a reproducible problem in the app or documentation
+title: "[Bug]: "
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug. Please provide enough detail for the issue
+        to be reproduced and investigated.
+
+  - type: input
+    id: version
+    attributes:
+      label: Version or commit
+      description: What version, release, or commit did you test?
+      placeholder: main, v2.0.0, or a commit SHA
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Browser, operating system, and how you ran the app
+      placeholder: Chrome 135 on Windows 11, served with php -S localhost:8000
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - UI / layout
+        - Folders
+        - Links
+        - Notes
+        - Import / export
+        - Data persistence
+        - Documentation
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open the app
+        2. Create a folder
+        3. Click ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: additional
+    attributes:
+      label: Additional context
+      description: Screenshots, console output, network errors, or anything else helpful

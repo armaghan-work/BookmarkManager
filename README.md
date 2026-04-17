@@ -326,20 +326,8 @@ Edit `js/constants.js` to modify:
 
 ## Contributing
 
-1. **Fork the repository**
-2. **Create feature branch**
-   ```bash
-   git checkout -b feature/amazing-feature
-   ```
-3. **Commit changes**
-   ```bash
-   git commit -m 'Add amazing feature'
-   ```
-4. **Push to branch**
-   ```bash
-   git push origin feature/amazing-feature
-   ```
-5. **Open Pull Request**
+Contributions are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md)
+for local setup, testing, and pull request guidelines.
 
 ### Development Guidelines
 - Follow existing code style
@@ -377,7 +365,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Support
 
 - **Issues**: [GitHub Issues](https://github.com/armaghan-work/BookmarkManager/issues)
-- **Discussions**: [GitHub Discussions](https://github.com/armaghan-work/BookmarkManager/discussions)
+- **Security**: See [SECURITY.md](SECURITY.md) for responsible disclosure instructions
 
 ---
 
