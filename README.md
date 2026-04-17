@@ -83,7 +83,7 @@ Since it doesn't rely on the browser's built-in bookmark manager, it minimizes m
 1. **Clone the repository**
    ```bash
    git clone https://github.com/armaghan-work/BookmarkManager.git
-   cd bookmark-manager
+   cd BookmarkManager
    ```
 
 2. **Set up web server**
@@ -161,7 +161,7 @@ The demo includes:
 ## Project Structure
 
 ```
-bookmark-manager/
+BookmarkManager/
 ├── 📄 index.html              # Main application page
 ├── 📄 bookmark_api.php        # Server-side API (optional)
 ├── 📄 bookmarks.json          # Will be created automatically or imported
